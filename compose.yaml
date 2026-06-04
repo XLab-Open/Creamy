@@ -1,0 +1,26 @@
+# Creamy container stack. Run from the repo root:
+#
+#   docker compose up -d     # or: make up
+#   docker compose logs -f   # or: make logs
+#   docker compose down      # or: make down
+#
+# The Dockerfile lives in docker/, but the build context is the repo root so it
+# can copy backend/, pyproject.toml, uv.lock, etc. Keep the context lean via
+# .dockerignore.
+services:
+  creamy:
+    build:
+      context: .
+      dockerfile: docker/Dockerfile
+    image: creamy:latest
+    container_name: creamy
+    env_file:
+      - path: .env
+        required: false
+    volumes:
+      - ${CREAMY_WORKSPACE_PATH:-.}:/workspace
+      - ${CREAMY_HOME:-${HOME}/.creamy}:/data
+      - ${CREAMY_AGENT_HOME:-${HOME}/.agents}:/root/.agents
+    stdin_open: true
+    tty: true
+    restart: unless-stopped
