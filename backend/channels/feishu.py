@@ -11,10 +11,10 @@ from loguru import logger
 
 from backend.agent.settings import FeishuSettings
 from backend.channels.base import Channel
-from backend.channels.message import ChannelMessage, MediaItem
+from backend.channels.message import ChannelMessage, MediaItem, MediaType
 from backend.utils.types import MessageHandler
 
-_MSG_TYPE_TO_MEDIA_TYPE: dict[str, str] = {
+_MSG_TYPE_TO_MEDIA_TYPE: dict[str, MediaType] = {
     "image": "image",
     "post": "image",
 }
@@ -87,7 +87,7 @@ class FeishuChannel(Channel):
 
     async def _run_websocket(self, stop_event: asyncio.Event) -> None:
         try:
-            import lark_oapi as lark  # type: ignore[import-not-found]
+            import lark_oapi as lark
         except ModuleNotFoundError as exc:
             raise RuntimeError(
                 "Feishu websocket mode requires dependency 'lark-oapi'. Install it with: uv add lark-oapi"
@@ -207,7 +207,7 @@ class FeishuChannel(Channel):
                 type=media_type,
                 mime_type="image/jpeg",
                 filename=image_key,
-                data_fetcher=lambda key=image_key: self._download_message_resource(message_id, key, "image"),
+                data_fetcher=lambda key=image_key: self._download_message_resource(message_id, key, "image"),  # type: ignore[misc]
             )
             for image_key in image_keys
         ]
@@ -222,8 +222,10 @@ class FeishuChannel(Channel):
         if self._allow_chats and chat_id not in self._allow_chats:
             return
 
-        sender = event.get("sender") if isinstance(event.get("sender"), dict) else {}
-        sender_id = sender.get("sender_id") if isinstance(sender.get("sender_id"), dict) else {}
+        sender = event.get("sender")
+        sender = sender if isinstance(sender, dict) else {}
+        sender_id = sender.get("sender_id")
+        sender_id = sender_id if isinstance(sender_id, dict) else {}
         sender_open_id = str(sender_id.get("open_id", ""))
         if self._allow_users and sender_open_id not in self._allow_users:
             return

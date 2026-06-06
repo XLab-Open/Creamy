@@ -7,7 +7,7 @@ from datetime import datetime
 from pathlib import Path
 from typing import TYPE_CHECKING, Literal, cast
 
-import requests
+import requests  # type: ignore[import-untyped]
 from pydantic import BaseModel, Field
 
 from backend.agent.settings import FeishuSettings
@@ -292,7 +292,7 @@ async def send_report(message: str, *, context: ToolContext) -> str:
         feishu_settings = FeishuSettings()
         access_token = get_feishu_tenant_access_token(feishu_settings)
         file_path = context.state.get("excel_path")
-        resolved_file = _resolve_cwd_path(file_path)
+        resolved_file = _resolve_cwd_path(str(file_path))
         if not resolved_file.is_file():
             return f"❌ 飞书发送失败：文件不存在 {resolved_file}"
 

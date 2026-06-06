@@ -39,7 +39,7 @@ class ForkTapeStore:
         if is_async_tape_store(parent):
             self._parent = parent
         else:
-            self._parent = AsyncTapeStoreAdapter(parent)
+            self._parent = AsyncTapeStoreAdapter(cast("TapeStore", parent))
 
     @property
     def _current(self) -> TapeStore:

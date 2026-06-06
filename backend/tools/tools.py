@@ -18,6 +18,7 @@ REGISTRY: dict[str, Tool] = {}
 def _add_logging(tool: Tool) -> Tool:
     if tool.handler is None:
         return tool
+    handler = tool.handler
 
     async def wrapped(*args, **kwargs):
         call_kwargs = kwargs.copy()
@@ -27,7 +28,7 @@ def _add_logging(tool: Tool) -> Tool:
         start = time.monotonic()
 
         try:
-            result = tool.handler(*args, **kwargs)
+            result = handler(*args, **kwargs)
             if inspect.isawaitable(result):
                 result = await result
         except Exception:

@@ -1,6 +1,6 @@
 import json
 
-import requests
+import requests  # type: ignore[import-untyped]
 
 from backend.agent.settings import FeishuSettings
 
@@ -45,7 +45,7 @@ def send_feishu_message(
         timeout=30,
     )
     response.raise_for_status()
-    data = response.json()
+    data: dict = response.json()
     if int(data.get("code", -1)) != 0:
         raise RuntimeError(f"Feishu send message failed: {data.get('msg', data)}")
     return data

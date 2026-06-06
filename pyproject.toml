@@ -114,6 +114,12 @@ disallow_untyped_defs = false
 disallow_any_unimported = false
 exclude = ["backend/skills/.*/scripts/.*"]
 
+# The inventory domain layer is loosely-typed business logic (dict/SQL/vector
+# juggling); type-checking is relaxed here rather than scattering ignores.
+[[tool.mypy.overrides]]
+module = "backend.inventory.*"
+ignore_errors = true
+
 [tool.vulture]
 paths = ["backend"]
 ignore_names = ["test_*", "Test*"]

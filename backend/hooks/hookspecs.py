@@ -93,7 +93,7 @@ class CreamyHookSpecs:
     @hookspec(firstresult=True)
     def provide_tape_store(self) -> TapeStore | AsyncTapeStore:
         """Provide a tape store instance for Creamy's conversation recording feature."""
-        ...
+        raise NotImplementedError
 
     @hookspec
     def provide_channels(self, message_handler: MessageHandler) -> list[Channel]:
