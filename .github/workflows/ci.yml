@@ -1,0 +1,70 @@
+name: CI
+
+on:
+  push:
+    branches: [main, "feat/**"]
+  pull_request:
+
+concurrency:
+  group: ci-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+
+jobs:
+  test:
+    name: test (py${{ matrix.python-version }})
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        # 3.14 is supported (see make test-all) but some binary deps may lack
+        # prebuilt wheels on CI — add it here once that's confirmed.
+        python-version: ["3.12", "3.13"]
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0 # hatch-vcs derives the version from git history/tags
+
+      - name: Install uv
+        uses: astral-sh/setup-uv@v5
+        with:
+          enable-cache: true
+
+      - name: Sync dependencies (locked)
+        run: uv sync --locked --python ${{ matrix.python-version }}
+
+      - name: Run tests
+        run: uv run pytest -q
+
+  lint:
+    # Non-blocking for now: ruff/mypy still carry pre-existing debt in the
+    # inventory/hook layers. Flip these steps to blocking (drop continue-on-error)
+    # once that debt is cleared.
+    name: lint & types (non-blocking)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Install uv
+        uses: astral-sh/setup-uv@v5
+        with:
+          enable-cache: true
+
+      - name: Sync dependencies (locked)
+        run: uv sync --locked --python 3.12
+
+      - name: Ruff lint
+        run: uv run ruff check --no-fix .
+        continue-on-error: true
+
+      - name: Ruff format check
+        run: uv run ruff format --check .
+        continue-on-error: true
+
+      - name: Mypy
+        run: uv run mypy backend
+        continue-on-error: true
