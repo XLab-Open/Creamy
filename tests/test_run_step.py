@@ -9,10 +9,10 @@ from __future__ import annotations
 import pytest
 from langchain_core.language_models import BaseChatModel
 from langchain_core.messages import AIMessage, AIMessageChunk
-from republic import LLM
 
 from backend.architecture.agent.agent import Agent
 from backend.architecture.context.context import default_tape_context
+from backend.architecture.core.engine import ModelEngine
 from backend.architecture.core.store import InMemoryTapeStore
 from backend.architecture.llm.graph import run_step, stream_step
 from backend.architecture.tool.tools import REGISTRY, tool
@@ -64,8 +64,8 @@ class StreamFakeChatModel(BaseChatModel):
 
 
 async def _new_tape(name: str = "t1"):
-    llm = LLM(model="fake:test", tape_store=InMemoryTapeStore(), context=default_tape_context())
-    tape = llm.tape(name)
+    engine = ModelEngine(InMemoryTapeStore(), default_tape_context())
+    tape = engine.tape(name)
     # Agent.run seeds this via ensure_bootstrap_anchor; reproduce it here.
     await tape.handoff_async("session/start", state={"owner": "human"})
     return tape

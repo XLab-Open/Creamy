@@ -152,24 +152,6 @@ wheels = [
 ]
 
 [[package]]
-name = "any-llm-sdk"
-version = "1.13.0"
-source = { registry = "https://pypi.org/simple" }
-dependencies = [
-    { name = "anthropic" },
-    { name = "httpx" },
-    { name = "openai" },
-    { name = "openresponses-types" },
-    { name = "pydantic" },
-    { name = "rich" },
-    { name = "typing-extensions" },
-]
-sdist = { url = "https://files.pythonhosted.org/packages/87/4b/dea4eeeb5e4e3e55fa6b37a7ec033a18a2527aabf565bd598071d6308fbd/any_llm_sdk-1.13.0.tar.gz", hash = "sha256:967c5f4dd099f5f6cc9673f2888d5550f6e821d25341d31133a05741c1ce903e", size = 153753, upload_time = "2026-03-23T10:27:29.843Z" }
-wheels = [
-    { url = "https://files.pythonhosted.org/packages/64/a1/0106667efdf870595981a0fc3e807675d1f8ded8dc8c20e936e6c42bcd95/any_llm_sdk-1.13.0-py3-none-any.whl", hash = "sha256:7e456a843cec249ae1cb3a498aa89df5baff8aa62d76a24718babb3b8a51e495", size = 216557, upload_time = "2026-03-23T10:27:28.306Z" },
-]
-
-[[package]]
 name = "anyio"
 version = "4.13.0"
 source = { registry = "https://pypi.org/simple" }
@@ -368,7 +350,7 @@ name = "creamy"
 source = { editable = "." }
 dependencies = [
     { name = "aiohttp" },
-    { name = "any-llm-sdk" },
+    { name = "authlib" },
     { name = "httpx", extra = ["socks"] },
     { name = "langchain-anthropic" },
     { name = "langchain-community" },
@@ -387,7 +369,6 @@ dependencies = [
     { name = "python-telegram-bot" },
     { name = "pyyaml" },
     { name = "rapidfuzz" },
-    { name = "republic" },
     { name = "rich" },
     { name = "sqlalchemy" },
     { name = "typer" },
@@ -411,7 +392,7 @@ dev = [
 [package.metadata]
 requires-dist = [
     { name = "aiohttp", specifier = ">=3.13.3" },
-    { name = "any-llm-sdk", extras = ["anthropic"] },
+    { name = "authlib", specifier = ">=1.6" },
     { name = "httpx", extras = ["socks"], specifier = ">=0.28.1" },
     { name = "langchain-anthropic", specifier = ">=0.3.0" },
     { name = "langchain-community", specifier = ">=0.4.1" },
@@ -431,7 +412,6 @@ requires-dist = [
     { name = "python-telegram-bot", specifier = ">=21.0" },
     { name = "pyyaml", specifier = ">=6.0.0" },
     { name = "rapidfuzz", specifier = ">=3.14.3" },
-    { name = "republic", specifier = ">=0.5.4" },
     { name = "rich", specifier = ">=13.0.0" },
     { name = "sqlalchemy", specifier = ">=2.0.0" },
     { name = "typer", specifier = ">=0.9.0" },
@@ -1447,18 +1427,6 @@ wheels = [
 ]
 
 [[package]]
-name = "openresponses-types"
-version = "2.3.0.post1"
-source = { registry = "https://pypi.org/simple" }
-dependencies = [
-    { name = "pydantic" },
-]
-sdist = { url = "https://files.pythonhosted.org/packages/d9/26/b612c3215f5599714fa94d63eb5ee59b4eb66dbdeeaf86bb4d848359484d/openresponses_types-2.3.0.post1.tar.gz", hash = "sha256:11b8896d3621d2ac2439f6ff106f34ddcb1bbd517c317a6c852a9df2e98a0753", size = 19254, upload_time = "2026-01-22T20:02:03.933Z" }
-wheels = [
-    { url = "https://files.pythonhosted.org/packages/b2/5f/e16dad89ed24f586da5b01b9b206d3adbf21fe1af8e4dc55d5b93158fde6/openresponses_types-2.3.0.post1-py3-none-any.whl", hash = "sha256:88f6abcef9cad839203abff420dd080978bf6eb33cc06ddc5d78da4ccdba7613", size = 13847, upload_time = "2026-01-22T20:02:02.582Z" },
-]
-
-[[package]]
 name = "opentelemetry-api"
 version = "1.39.1"
 source = { registry = "https://pypi.org/simple" }
@@ -2273,21 +2241,6 @@ wheels = [
     { url = "https://files.pythonhosted.org/packages/d5/fe/1b3113817447a1d4155e4ac76d2e072f42c0bcba2f43fa8a0e756ea2cd91/regex-2026.5.9-cp314-cp314t-win32.whl", hash = "sha256:3ddd90103f9e5c471c49c7852ecc1fe27c7e45eb99e977aefe7caa4e779f4f58", size = 275746, upload_time = "2026-05-09T23:15:12.609Z" },
     { url = "https://files.pythonhosted.org/packages/92/73/93d42045302636c91f2e5ef588b65b84b01428f28ec77de256b1dfdfbe5c/regex-2026.5.9-cp314-cp314t-win_amd64.whl", hash = "sha256:ca518ed29c46eecba6010b15f1b9a479314d2de409536e71b6a13aa04e3b8a77", size = 285685, upload_time = "2026-05-09T23:15:15.086Z" },
     { url = "https://files.pythonhosted.org/packages/da/80/35b4c33c804a165a7f55289afda3ea9e3eb6d15800341a2d66455c0f1f30/regex-2026.5.9-cp314-cp314t-win_arm64.whl", hash = "sha256:5e41809d2683fcde7d5a8c87a6567ba1fb1ce0de9f31bff578de00a4b2d76daa", size = 275713, upload_time = "2026-05-09T23:15:16.98Z" },
-]
-
-[[package]]
-name = "republic"
-version = "0.5.7"
-source = { registry = "https://pypi.org/simple" }
-dependencies = [
-    { name = "any-llm-sdk" },
-    { name = "authlib" },
-    { name = "httpx" },
-    { name = "pydantic" },
-]
-sdist = { url = "https://files.pythonhosted.org/packages/4d/40/9ebd36e489696c0904df18bf4da6edc4b87f203b55f6942d3f782c69530c/republic-0.5.7.tar.gz", hash = "sha256:74cb0a02c3dffaa3438a8f41d19b137b7c8310a7d6c2c821b81cf98d5167200a", size = 155715, upload_time = "2026-03-27T06:59:32.557Z" }
-wheels = [
-    { url = "https://files.pythonhosted.org/packages/aa/33/26f4ad2665f96af4d02ae9c6f629e1d0c2538f22cecece3f8df6cd4c1da0/republic-0.5.7-py3-none-any.whl", hash = "sha256:702e2a3b662a91e68cc9c5b4893460dba01e02f081f309e6ce30d1e79c336db3", size = 62290, upload_time = "2026-03-27T06:59:33.458Z" },
 ]
 
 [[package]]

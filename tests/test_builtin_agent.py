@@ -6,9 +6,9 @@ from typing import Any
 from unittest.mock import MagicMock, patch
 
 import pytest
-import republic.auth.openai_codex as openai_codex
 
 import backend.architecture.agent as agent_module
+import backend.architecture.agent.codex_oauth_flow as openai_codex
 from backend.architecture.agent.agent import Agent
 from backend.architecture.agent.settings import AgentSettings
 from backend.architecture.core.tape_types import TapeContext
