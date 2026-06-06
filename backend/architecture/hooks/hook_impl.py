@@ -25,7 +25,7 @@ from backend.architecture.core.tape_types import TapeContext
 from backend.architecture.llm.embedding import Embedding
 from backend.architecture.plugins.logicfunction import _inventory_embedding_signal
 from backend.architecture.plugins.postprocess import LLMPostprocess
-from backend.architecture.schemas.hookspecs import hookimpl
+from backend.architecture.hooks.hookspecs import hookimpl
 from backend.architecture.utils.envelope import content_of, field_of
 from backend.architecture.utils.types import Envelope, MessageHandler, State
 

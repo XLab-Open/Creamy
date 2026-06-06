@@ -11,7 +11,7 @@ import pytest
 from backend.app.framework import CreamyFramework
 from backend.architecture.channels.message import ChannelMessage, MediaItem
 from backend.architecture.channels.telegram import TelegramChannel, _extract_media_items
-from backend.architecture.schemas.hook_impl import BuiltinImpl
+from backend.architecture.hooks.hook_impl import BuiltinImpl
 
 # ---------------------------------------------------------------------------
 # MediaItem & ChannelMessage

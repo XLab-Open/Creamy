@@ -5,7 +5,7 @@ from importlib.metadata import PackageNotFoundError
 from importlib.metadata import version as metadata_version
 
 from backend.app.framework import CreamyFramework
-from backend.architecture.schemas.hookspecs import hookimpl
+from backend.architecture.hooks.hookspecs import hookimpl
 from backend.architecture.tool.tools import tool
 
 __all__ = ["CreamyFramework", "hookimpl", "tool"]

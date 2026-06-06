@@ -9,7 +9,7 @@ from backend.app.framework import CreamyFramework
 from backend.architecture.channels.message import ChannelMessage
 from backend.architecture.core.events import AsyncStreamEvents, StreamEvent
 from backend.architecture.memory.store import FileTapeStore
-from backend.architecture.schemas.hook_impl import AGENTS_FILE_NAME, DEFAULT_SYSTEM_PROMPT, BuiltinImpl
+from backend.architecture.hooks.hook_impl import AGENTS_FILE_NAME, DEFAULT_SYSTEM_PROMPT, BuiltinImpl
 
 
 class RecordingLifespan:

@@ -11,7 +11,7 @@ from backend.app.framework import CreamyFramework
 from backend.architecture.channels.base import Channel
 from backend.architecture.channels.message import ChannelMessage
 from backend.architecture.core.events import AsyncStreamEvents, StreamEvent
-from backend.architecture.schemas.hookspecs import hookimpl
+from backend.architecture.hooks.hookspecs import hookimpl
 
 
 class NamedChannel(Channel):

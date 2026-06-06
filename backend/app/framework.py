@@ -14,8 +14,8 @@ from loguru import logger
 from backend.architecture.core.errors import ErrorKind, RepublicError
 from backend.architecture.core.store import AsyncTapeStore, TapeStore
 from backend.architecture.core.tape_types import TapeContext
-from backend.architecture.schemas.hook_runtime import HookRuntime
-from backend.architecture.schemas.hookspecs import CREAMY_HOOK_NAMESPACE, CreamyHookSpecs
+from backend.architecture.hooks.hook_runtime import HookRuntime
+from backend.architecture.hooks.hookspecs import CREAMY_HOOK_NAMESPACE, CreamyHookSpecs
 from backend.architecture.utils.envelope import content_of, field_of, unpack_batch
 from backend.architecture.utils.types import Envelope, MessageHandler, OutboundChannelRouter, TurnResult
 
@@ -44,7 +44,7 @@ class CreamyFramework:
         self._outbound_router: OutboundChannelRouter | None = None
 
     def _load_builtin_hooks(self) -> None:
-        from backend.architecture.schemas.hook_impl import BuiltinImpl
+        from backend.architecture.hooks.hook_impl import BuiltinImpl
 
         impl = BuiltinImpl(self)
 

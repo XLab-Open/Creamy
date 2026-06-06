@@ -38,7 +38,7 @@ uv run pytest tests/test_framework.py::test_name -q
 resolve_session → load_state → build_prompt → run_model → save_state → render_outbound → dispatch_outbound
 ```
 
-- **The hook contract** is `backend/architecture/schemas/hookspecs.py` (`CreamyHookSpecs`); the built-in implementations are `backend/architecture/schemas/hook_impl.py`. Read these two first.
+- **The hook contract** is `backend/architecture/hooks/hookspecs.py` (`CreamyHookSpecs`); the built-in implementations are `backend/architecture/hooks/hook_impl.py`. Read these two first.
 - **The runtime** is `backend/app/framework.py` (`CreamyFramework`). `process_inbound()` drives a turn; hooks are dispatched through a hook-runtime abstraction (`call_many_sync` / firstresult), not by calling `hook.*` directly.
 - **Plugin precedence: last registered wins.** Built-ins register first (`name="builtin"`), then external plugins from the `creamy` entry-point group (`importlib.metadata.entry_points(group="creamy")`). A later plugin overrides a default for `firstresult` hooks. There are no privileged code paths.
 - `run_model` and `run_model_stream` are **mutually exclusive** — implement one, not both. `firstresult=True` hooks (`resolve_session`, `load_state`, `build_prompt`, `run_model*`, `provide_tape_store`, `build_tape_context`) take the first non-None result.
