@@ -178,7 +178,7 @@ class Pgvector:
                         ))
             except Exception as e:
                 # 单张表查询失败不影响其他表
-                print(f"[WARN] table={table_name} query failed: {e}")
+                logger.warning("inventory.vector_query.table_failed table={} error={}", table_name, e)
                 continue
 
         # ── 4. 全局按 score 升序排序，取 top-k ────────────────────────

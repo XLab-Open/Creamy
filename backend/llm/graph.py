@@ -186,11 +186,12 @@ async def run_step(
 ) -> StepResult:
     """Run one non-streaming model turn and persist the resulting tape entries."""
     graph, run_id, lc_messages = await _prepare(tape, prompt, system_prompt, tools, model, settings, chat_model)
+    log = logger.bind(run_id=run_id)
 
     try:
         final_state = await graph.ainvoke({"messages": lc_messages})
     except Exception as exc:
-        logger.exception("llm.run_step.error tape={} error={}", tape.name, str(exc))
+        log.exception("llm.run_step.error tape={}", tape.name)
         error = AgentError(ErrorKind.PROVIDER, str(exc))
         await tape.append_async(TapeEntry.error(error, run_id=run_id))
         return StepResult.error_result(error)
@@ -214,6 +215,7 @@ async def stream_step(
 ) -> AsyncStreamEvents:
     """Run one streaming model turn, returning events plus terminal state."""
     graph, run_id, lc_messages = await _prepare(tape, prompt, system_prompt, tools, model, settings, chat_model)
+    log = logger.bind(run_id=run_id)
     state = StreamState()
 
     async def _generate() -> AsyncIterator[StreamEvent]:
@@ -229,7 +231,7 @@ async def stream_step(
                 elif mode == "values":
                     final_messages = chunk["messages"]
         except Exception as exc:
-            logger.exception("llm.stream_step.error tape={} error={}", tape.name, str(exc))
+            log.exception("llm.stream_step.error tape={}", tape.name)
             error = AgentError(ErrorKind.PROVIDER, str(exc))
             state.error = error
             await tape.append_async(TapeEntry.error(error, run_id=run_id))
