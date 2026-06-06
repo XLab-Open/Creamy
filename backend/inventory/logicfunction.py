@@ -8,7 +8,7 @@ from typing import Any, Protocol
 from loguru import logger
 from sqlalchemy import MetaData, text
 
-from backend.constants.sqlconstant import _INVENTORY_INTENT_PROTOTYPES
+from backend.inventory.sqlconstant import _INVENTORY_INTENT_PROTOTYPES
 from backend.llm.embedding import Embedding
 
 _IDENTIFIER_RE = re.compile(r"^[A-Za-z_][A-Za-z0-9_]*$")

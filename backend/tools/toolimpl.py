@@ -22,7 +22,7 @@ from backend.tools.channeltool.tool_feishu import (
 )
 from backend.tools.filetool.file_impl import expansion_write_excel
 from backend.tools.shelltool.shell_manager import shell_manager
-from backend.tools.sqltool.inventory_query import InventoryQuery
+from backend.inventory.inventory_query import InventoryQuery
 from backend.tools.tools import resolve_tool_names, tool
 
 if TYPE_CHECKING:

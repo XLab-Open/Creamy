@@ -11,7 +11,7 @@ from backend.agent.agent import Agent
 from backend.app.framework import CreamyFramework
 from backend.channels.base import Channel
 from backend.channels.message import ChannelMessage, MediaItem
-from backend.constants.sqlconstant import (
+from backend.inventory.sqlconstant import (
     _INVENTORY_KEYWORDS,
     INTENT_INVENTORY_SCORE_THRESHOLD,
     INTENT_WEIGHT_EMBEDDING,
@@ -24,8 +24,8 @@ from backend.core.store import TapeStore
 from backend.core.tape_types import TapeContext
 from backend.hooks.hookspecs import hookimpl
 from backend.llm.embedding import Embedding
-from backend.plugins.logicfunction import _inventory_embedding_signal
-from backend.plugins.postprocess import LLMPostprocess
+from backend.inventory.logicfunction import _inventory_embedding_signal
+from backend.inventory.postprocess import LLMPostprocess
 from backend.utils.envelope import content_of, field_of
 from backend.utils.types import Envelope, MessageHandler, State
 

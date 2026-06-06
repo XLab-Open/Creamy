@@ -6,9 +6,9 @@ from loguru import logger
 from sqlalchemy.exc import ArgumentError, SQLAlchemyError
 
 from backend.agent.settings import SQLSettings
+from backend.inventory.logicfunction import DataFilter, Pgvector
+from backend.inventory.sql import SQL
 from backend.llm.embedding import Embedding
-from backend.pipelines.sql import SQL
-from backend.plugins.logicfunction import DataFilter, Pgvector
 from backend.utils.types import State
 
 _IDENTIFIER_RE = re.compile(r"^[A-Za-z_][A-Za-z0-9_]*$")
