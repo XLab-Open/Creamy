@@ -122,7 +122,7 @@ ignore_names = ["test_*", "Test*"]
 target-version = "py312"
 line-length = 120
 fix = true
-extend-exclude = ["backend/skills/**/scripts/*"]
+extend-exclude = ["backend/skills/**/scripts/*", "backend/_version.py"]
 
 [tool.ruff.lint]
 select = [
