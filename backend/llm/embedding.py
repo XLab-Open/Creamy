@@ -1,5 +1,5 @@
-import os
 import httpx
+
 from backend.agent.settings import EmbeddingSettings
 
 MAX_EMBEDDING_BATCH_SIZE = 25

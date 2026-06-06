@@ -17,9 +17,9 @@ from urllib.request import url2pathname
 import typer
 
 from backend.agent.auth import app as login_app  # noqa: F401
+from backend.app.framework import CreamyFramework
 from backend.channels.message import ChannelMessage
 from backend.utils.envelope import field_of
-from backend.app.framework import CreamyFramework
 
 
 def run(

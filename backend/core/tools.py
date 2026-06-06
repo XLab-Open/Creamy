@@ -193,7 +193,7 @@ class Tool:
         return tool_from_model(model, handler_fn, context=context)
 
 
-def schema_from_model(
+def schema_from_model[ModelT: BaseModel](
     model: type[ModelT],
     *,
     name: str | None = None,
@@ -212,7 +212,7 @@ def schema_from_model(
     }
 
 
-def tool_from_model(
+def tool_from_model[ModelT: BaseModel](
     model: type[ModelT],
     handler: Callable[..., Any],
     *,

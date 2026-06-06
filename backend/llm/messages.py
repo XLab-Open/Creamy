@@ -33,13 +33,10 @@ def _model_name(name: str) -> str:
 def _make_coroutine(tool: Tool, context: ToolContext):
     async def _run(**kwargs: Any) -> str:
         try:
-            if tool.context:
-                output = tool.run(context=context, **kwargs)
-            else:
-                output = tool.run(**kwargs)
+            output = tool.run(context=context, **kwargs) if tool.context else tool.run(**kwargs)
             if inspect.isawaitable(output):
                 output = await output
-        except Exception as exc:  # noqa: BLE001 - tool errors surface as text to the model
+        except Exception as exc:
             return f"error: {exc}"
         return output if isinstance(output, str) else json.dumps(output, ensure_ascii=False, default=str)
 

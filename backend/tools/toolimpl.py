@@ -14,6 +14,7 @@ from backend.agent.settings import FeishuSettings
 from backend.core.store import AsyncTapeStore
 from backend.core.tape_types import TapeQuery
 from backend.core.tools import ToolContext
+from backend.inventory.inventory_query import InventoryQuery
 from backend.skills.skills import discover_skills
 from backend.tools.channeltool.tool_feishu import (
     get_feishu_tenant_access_token,
@@ -22,7 +23,6 @@ from backend.tools.channeltool.tool_feishu import (
 )
 from backend.tools.filetool.file_impl import expansion_write_excel
 from backend.tools.shelltool.shell_manager import shell_manager
-from backend.inventory.inventory_query import InventoryQuery
 from backend.tools.tools import resolve_tool_names, tool
 
 if TYPE_CHECKING:
@@ -332,7 +332,7 @@ async def send_report(message: str, *, context: ToolContext) -> str:
             content={"file_key": file_key},
         )
 
-        return f"✅ 飞书消息已发送至 {chat_id}，附件：{resolved_file.name}（file_key={file_key}）"
+        return f"✅ 飞书消息已发送至 {chat_id}，附件：{resolved_file.name}（file_key={file_key}）"  # noqa: TRY300
 
     except Exception as e:
         # logger.exception("send.report failed")

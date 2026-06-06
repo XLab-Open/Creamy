@@ -5,8 +5,8 @@ from collections.abc import AsyncIterable, Collection
 
 from loguru import logger
 
-from backend.app.framework import CreamyFramework
 from backend.agent.settings import ChannelSettings
+from backend.app.framework import CreamyFramework
 from backend.channels.base import Channel
 from backend.channels.handler import BufferedMessageHandler
 from backend.channels.message import ChannelMessage

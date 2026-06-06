@@ -325,11 +325,13 @@ class FeishuChannel(Channel):
         req_headers = {"Content-Type": "application/json; charset=utf-8"}
         if headers:
             req_headers.update(headers)
-        async with ClientSession() as session:
-            async with session.request(method, url, json=payload, headers=req_headers) as response:
-                data = await response.json()
+        async with (
+            ClientSession() as session,
+            session.request(method, url, json=payload, headers=req_headers) as response,
+        ):
+            data = await response.json()
         if not isinstance(data, dict):
-            raise RuntimeError("Unexpected Feishu API response format.")
+            raise RuntimeError("Unexpected Feishu API response format.")  # noqa: TRY004 - API contract error, not a type error
         return data
 
     async def _download_message_resource(self, message_id: str, file_key: str, file_type: str) -> bytes:

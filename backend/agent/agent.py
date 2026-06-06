@@ -17,8 +17,8 @@ from typing import Any, Literal, overload
 
 from loguru import logger
 
-from backend.app.framework import CreamyFramework
 from backend.agent.settings import AgentSettings, load_settings
+from backend.app.framework import CreamyFramework
 from backend.core.engine import ModelEngine, Tape
 from backend.core.errors import RepublicError
 from backend.core.events import AsyncStreamEvents, StreamEvent, StreamState
@@ -379,7 +379,6 @@ class Agent:
         allowed_tools: Collection[str] | None = None,
     ) -> AsyncGenerator[StreamEvent, None]:
         auto_handoff_remaining = MAX_AUTO_HANDOFF_RETRIES
-        display_model = model or self.settings.model
         next_prompt = prompt
         for step in range(1, self.settings.max_steps + 1):
             start = time.monotonic()

@@ -12,7 +12,7 @@ from collections.abc import Callable, Coroutine, Iterable
 from dataclasses import dataclass, field, replace
 from datetime import UTC, datetime
 from datetime import date as date_type
-from typing import TYPE_CHECKING, Any, Generic, Self, TypeAlias, TypeVar, overload
+from typing import TYPE_CHECKING, Any, Self, TypeVar, overload
 
 from backend.core.errors import AgentError
 
@@ -76,7 +76,7 @@ T = TypeVar("T", bound="TapeStore | AsyncTapeStore", covariant=True)
 
 
 @dataclass(frozen=True)
-class TapeQuery(Generic[T]):
+class TapeQuery[T: "TapeStore | AsyncTapeStore"]:
     """Immutable, fluent query over a single tape's entries."""
 
     tape: str
@@ -130,9 +130,9 @@ class _LastAnchor:
 
 
 LAST_ANCHOR = _LastAnchor()
-AnchorSelector: TypeAlias = str | None | _LastAnchor
-SelectedMessages: TypeAlias = list[dict[str, Any]] | Coroutine[Any, Any, list[dict[str, Any]]]
-ContextSelector: TypeAlias = Callable[[Iterable[TapeEntry], "TapeContext"], SelectedMessages]
+type AnchorSelector = str | None | _LastAnchor
+type SelectedMessages = list[dict[str, Any]] | Coroutine[Any, Any, list[dict[str, Any]]]
+type ContextSelector = Callable[[Iterable[TapeEntry], "TapeContext"], SelectedMessages]
 
 
 @dataclass(frozen=True)
