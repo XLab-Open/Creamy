@@ -7,14 +7,14 @@ from pathlib import Path
 from types import SimpleNamespace
 
 import pytest
-from republic import StreamEvent
 
-from backend.architecture.channels.cli import CliChannel
-from backend.architecture.channels.feishu import FeishuChannel
-from backend.architecture.channels.handler import BufferedMessageHandler
-from backend.architecture.channels.manager import ChannelManager
-from backend.architecture.channels.message import ChannelMessage
-from backend.architecture.channels.telegram import CreamyMessageFilter, TelegramChannel, TelegramMessageParser
+from backend.channels.cli import CliChannel
+from backend.channels.feishu import FeishuChannel
+from backend.channels.handler import BufferedMessageHandler
+from backend.channels.manager import ChannelManager
+from backend.channels.message import ChannelMessage
+from backend.channels.telegram import CreamyMessageFilter, TelegramChannel, TelegramMessageParser
+from backend.core.events import StreamEvent
 
 
 class FakeChannel:
@@ -151,7 +151,7 @@ async def test_channel_manager_on_receive_uses_buffer_for_debounced_channel(monk
         async def __call__(self, message: ChannelMessage) -> None:
             calls.append(message)
 
-    import bub.channels.manager as manager_module
+    import backend.channels.manager as manager_module
 
     monkeypatch.setattr(manager_module, "BufferedMessageHandler", StubBufferedMessageHandler)
 
@@ -196,7 +196,7 @@ async def test_channel_manager_listen_and_run_passes_stream_output_setting(
         active_time_window = 60.0
         stream_output = True
 
-    import backend.architecture.channels.manager as manager_module
+    import backend.channels.manager as manager_module
 
     monkeypatch.setattr(manager_module, "ChannelSettings", StubChannelSettings)
     manager = ChannelManager(framework)
@@ -283,6 +283,7 @@ def test_cli_channel_normalize_input_prefixes_shell_commands() -> None:
 @pytest.mark.asyncio
 async def test_cli_channel_stream_events_renders_stream_and_yields_events() -> None:
     channel = CliChannel.__new__(CliChannel)
+    channel._tui = False  # take the non-TUI renderer path
     events: list[tuple[str, str, str]] = []
     live_handle = object()
     channel._renderer = SimpleNamespace(
@@ -399,7 +400,7 @@ async def test_telegram_channel_build_message_wraps_payload_and_disables_outboun
         get_reply=_async_return({"message": "prev", "type": "text"}),
     )
     channel._parser = parser
-    monkeypatch.setattr("bub.channels.telegram.MESSAGE_FILTER.filter", lambda message: True)
+    monkeypatch.setattr("backend.channels.telegram.MESSAGE_FILTER.filter", lambda message: True)
 
     message = SimpleNamespace(chat_id=42)
 
@@ -467,7 +468,8 @@ def test_feishu_extract_reply_text_prefers_message_field() -> None:
 
 def test_feishu_extract_inbound_text_supports_text_json_and_non_text() -> None:
     assert FeishuChannel._extract_inbound_text("text", '{"text":"hi"}') == "hi"
-    assert FeishuChannel._extract_inbound_text("image", "{}") == "[Feishu image message]"
+    # non-text messages carry no inline text; images now flow through media/_extract_image_keys
+    assert FeishuChannel._extract_inbound_text("image", "{}") == ""
 
 
 @pytest.mark.asyncio
@@ -491,14 +493,14 @@ async def test_feishu_handle_event_payload_builds_channel_message(monkeypatch: p
             "content": '{"text":"hello"}',
         },
     }
-    await channel._handle_event_payload(payload)  # noqa: SLF001
+    await channel._build_message(payload)
 
     assert len(received) == 1
     inbound = received[0]
     assert inbound.session_id == "feishu:oc_abc"
     assert inbound.channel == "feishu"
     assert inbound.chat_id == "oc_abc"
-    assert inbound.output_channel == "null"
+    assert inbound.output_channel == "feishu"
     assert '"message": "hello"' in inbound.content
 
 

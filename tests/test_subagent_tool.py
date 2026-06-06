@@ -4,10 +4,10 @@ from typing import Any
 from unittest.mock import AsyncMock
 
 import pytest
-from republic import AsyncStreamEvents, StreamEvent
 
-from backend.architecture.tool.toolimpl import run_subagent
-from backend.architecture.tool.tools import REGISTRY, tool
+from backend.core.events import AsyncStreamEvents, StreamEvent
+from backend.tools.toolimpl import run_subagent
+from backend.tools.tools import REGISTRY, tool
 
 
 class FakeContext:

@@ -1,9 +1,9 @@
 from __future__ import annotations
 
 import pytest
-from republic import TapeEntry
 
-from backend.architecture.memory.store import FileTapeStore, ForkTapeStore
+from backend.core.tape_types import TapeEntry
+from backend.memory.store import FileTapeStore, ForkTapeStore
 
 
 @pytest.mark.asyncio

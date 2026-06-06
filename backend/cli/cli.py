@@ -16,10 +16,10 @@ from urllib.request import url2pathname
 
 import typer
 
-from backend.architecture.agent.auth import app as login_app  # noqa: F401
-from backend.architecture.channels.message import ChannelMessage
-from backend.architecture.utils.envelope import field_of
+from backend.agent.auth import app as login_app  # noqa: F401
 from backend.app.framework import CreamyFramework
+from backend.channels.message import ChannelMessage
+from backend.utils.envelope import field_of
 
 
 def run(
@@ -65,7 +65,7 @@ def gateway(
     enable_channels: list[str] = typer.Option([], "--enable-channel", help="Channels to enable for CLI (default: all)"),
 ) -> None:
     """Start message listeners(like telegram)."""
-    from backend.architecture.channels.manager import ChannelManager
+    from backend.channels.manager import ChannelManager
 
     framework = ctx.ensure_object(CreamyFramework)
 
@@ -79,7 +79,7 @@ def chat(
     session_id: str | None = typer.Option(None, "--session-id", help="Optional session id"),
 ) -> None:
     """Start a REPL chat session."""
-    from backend.architecture.channels.manager import ChannelManager
+    from backend.channels.manager import ChannelManager
 
     framework = ctx.ensure_object(CreamyFramework)
 
@@ -106,7 +106,7 @@ def _find_uv() -> str:
 
 @lru_cache(maxsize=1)
 def _default_project() -> Path:
-    from ..architecture.agent.settings import load_settings
+    from ..agent.settings import load_settings
 
     settings = load_settings()
     project = settings.home / "creamy-project"

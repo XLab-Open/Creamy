@@ -5,8 +5,8 @@ from pathlib import Path
 
 from typer.testing import CliRunner
 
-import backend.architecture.agent.auth as auth
-import backend.architecture.channels.cli as cli
+import backend.agent.auth as auth
+import backend.cli.cli as cli
 from backend.app.framework import CreamyFramework
 
 
