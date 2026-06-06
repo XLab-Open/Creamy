@@ -172,7 +172,7 @@ class BuiltinImpl:
     @hookimpl
     async def build_prompt(self, message: ChannelMessage, session_id: str, state: State) -> str | list[dict]:
         content = content_of(message)
-        if content.startswith(","):
+        if content.startswith("/"):
             message.kind = "command"
             state["kind"] = "command"
             return content
@@ -218,7 +218,7 @@ class BuiltinImpl:
         from backend.cli import cli
 
         app.command("run")(cli.run)
-        app.command("chat")(cli.chat)
+        app.command("cli")(cli.chat)
         app.add_typer(cli.login_app)
         app.command("hooks", hidden=True)(cli.list_hooks)
         app.command("gateway")(cli.gateway)

@@ -318,14 +318,14 @@ async def test_build_prompt_command_ignores_media(tmp_path: Path) -> None:
     message = ChannelMessage(
         session_id="s",
         channel="tg",
-        content=",help",
+        content="/help",
         media=[MediaItem(type="image", mime_type="image/jpeg", data_fetcher=_async_return(b"X"))],
     )
 
     result = await impl.build_prompt(message, session_id="s", state={})
 
     assert isinstance(result, str)
-    assert result == ",help"
+    assert result == "/help"
     assert message.kind == "command"
 
 

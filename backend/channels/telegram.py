@@ -225,7 +225,7 @@ class TelegramChannel(Channel):
             content = content[len("/creamy ") :]
 
         # Pass comma commands directly to the input handler
-        if content.strip().startswith(","):
+        if content.strip().startswith("/"):
             return ChannelMessage(session_id=session_id, content=content.strip(), channel=self.name, chat_id=chat_id)
 
         media_items = _extract_media_items(metadata)
