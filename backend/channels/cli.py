@@ -240,6 +240,10 @@ class CliChannel(Channel):
 
     # ── Full-screen TUI (default) ───────────────────────────────────────────
     async def _run_tui(self) -> None:
+        from backend.observability.logging import disable_console_logging
+
+        # Logs to stderr would corrupt the full-screen TUI; keep them in the file sink only.
+        disable_console_logging()
         self._tui = True
         await self._refresh_tape_info()
 

@@ -96,35 +96,36 @@ class CreamyFramework:
             ) or self._default_session_id(inbound)
             if isinstance(inbound, dict):
                 inbound.setdefault("session_id", session_id)
-            state = {"_runtime_workspace": str(self.workspace)}
-            for hook_state in reversed(
-                await self._hook_runtime.call_many("load_state", message=inbound, session_id=session_id)
-            ):
-                if isinstance(hook_state, dict):
-                    state.update(hook_state)
-            prompt = await self._hook_runtime.call_first(
-                "build_prompt", message=inbound, session_id=session_id, state=state
-            )
-            if not prompt:
-                prompt = content_of(inbound)
-            model_output = ""
-            try:
-                model_output = await self._run_model(inbound, prompt, session_id, state, stream_output)
-            finally:
-                await self._hook_runtime.call_many(
-                    "save_state",
-                    session_id=session_id,
-                    state=state,
-                    message=inbound,
-                    model_output=model_output,
+            with logger.contextualize(session_id=session_id, channel=str(field_of(inbound, "channel", "-"))):
+                state = {"_runtime_workspace": str(self.workspace)}
+                for hook_state in reversed(
+                    await self._hook_runtime.call_many("load_state", message=inbound, session_id=session_id)
+                ):
+                    if isinstance(hook_state, dict):
+                        state.update(hook_state)
+                prompt = await self._hook_runtime.call_first(
+                    "build_prompt", message=inbound, session_id=session_id, state=state
                 )
-            await self._intent_detection(inbound, model_output, state)
-            model_output = await self._postprocess_model_output(inbound, model_output, state)
+                if not prompt:
+                    prompt = content_of(inbound)
+                model_output = ""
+                try:
+                    model_output = await self._run_model(inbound, prompt, session_id, state, stream_output)
+                finally:
+                    await self._hook_runtime.call_many(
+                        "save_state",
+                        session_id=session_id,
+                        state=state,
+                        message=inbound,
+                        model_output=model_output,
+                    )
+                await self._intent_detection(inbound, model_output, state)
+                model_output = await self._postprocess_model_output(inbound, model_output, state)
 
-            outbounds = await self._collect_outbounds(inbound, session_id, state, model_output)
-            for outbound in outbounds:
-                await self._hook_runtime.call_many("dispatch_outbound", message=outbound)
-            return TurnResult(session_id=session_id, prompt=prompt, model_output=model_output, outbounds=outbounds)
+                outbounds = await self._collect_outbounds(inbound, session_id, state, model_output)
+                for outbound in outbounds:
+                    await self._hook_runtime.call_many("dispatch_outbound", message=outbound)
+                return TurnResult(session_id=session_id, prompt=prompt, model_output=model_output, outbounds=outbounds)
         except Exception as exc:
             logger.exception("Error processing inbound message")
             await self._hook_runtime.notify_error(stage="turn", error=exc, message=inbound)

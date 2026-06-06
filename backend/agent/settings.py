@@ -7,7 +7,7 @@ from collections.abc import Callable
 from functools import lru_cache
 from typing import Any, Literal
 
-from pydantic import Field
+from pydantic import Field, field_validator
 from pydantic_settings import BaseSettings, PydanticBaseSettingsSource, SettingsConfigDict, YamlConfigSettingsSource
 
 DEFAULT_MODEL = "openrouter:qwen/qwen3-coder-next"
@@ -58,6 +58,13 @@ class AgentSettings(BaseSettings):
     client_args: dict[str, Any] | None = None
     verbose: int = Field(default=0, description="Verbosity level for logging. Higher means more verbose.", ge=0, le=2)
 
+    @field_validator("home")
+    @classmethod
+    def _expand_home(cls, value: pathlib.Path) -> pathlib.Path:
+        # Expand "~" (and env vars) so home-derived paths (tapes, logs, plugins,
+        # history, config.yml) all resolve to the real directory.
+        return pathlib.Path(os.path.expanduser(os.path.expandvars(str(value))))
+
     @classmethod
     def settings_customise_sources(
         cls,
@@ -67,7 +74,7 @@ class AgentSettings(BaseSettings):
         dotenv_settings: PydanticBaseSettingsSource,
         file_secret_settings: PydanticBaseSettingsSource,
     ) -> tuple[PydanticBaseSettingsSource, ...]:
-        home = os.getenv("CREAMY_HOME", str(DEFAULT_HOME))
+        home = os.path.expanduser(os.getenv("CREAMY_HOME", str(DEFAULT_HOME)))
         return (
             init_settings,
             env_settings,

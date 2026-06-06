@@ -33,3 +33,6 @@ env/
 # Local secrets
 .env
 ~
+
+# docs
+docs
