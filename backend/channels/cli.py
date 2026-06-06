@@ -24,7 +24,6 @@ from prompt_toolkit.styles import Style
 from prompt_toolkit.utils import get_cwidth
 from rich import get_console
 from rich.live import Live
-from rich.text import Text
 
 from backend.agent.agent import Agent
 from backend.channels.base import Channel
@@ -344,7 +343,7 @@ class CliChannel(Channel):
             content=request,
             lifespan=self.message_lifespan(asyncio.Event()),
         )
-        asyncio.create_task(self._on_receive(message))
+        asyncio.create_task(self._on_receive(message))  # noqa: RUF006 - fire-and-forget TUI input dispatch
         self._tui_refresh()
 
     async def _stream_events_tui(

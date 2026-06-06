@@ -11,6 +11,13 @@ from backend.agent.agent import Agent
 from backend.app.framework import CreamyFramework
 from backend.channels.base import Channel
 from backend.channels.message import ChannelMessage, MediaItem
+from backend.context.context import default_tape_context
+from backend.core.events import AsyncStreamEvents
+from backend.core.store import TapeStore
+from backend.core.tape_types import TapeContext
+from backend.hooks.hookspecs import hookimpl
+from backend.inventory.logicfunction import _inventory_embedding_signal
+from backend.inventory.postprocess import LLMPostprocess
 from backend.inventory.sqlconstant import (
     _INVENTORY_KEYWORDS,
     INTENT_INVENTORY_SCORE_THRESHOLD,
@@ -18,14 +25,7 @@ from backend.inventory.sqlconstant import (
     INTENT_WEIGHT_KEYWORD,
     INTENT_WEIGHT_MODEL,
 )
-from backend.context.context import default_tape_context
-from backend.core.events import AsyncStreamEvents
-from backend.core.store import TapeStore
-from backend.core.tape_types import TapeContext
-from backend.hooks.hookspecs import hookimpl
 from backend.llm.embedding import Embedding
-from backend.inventory.logicfunction import _inventory_embedding_signal
-from backend.inventory.postprocess import LLMPostprocess
 from backend.utils.envelope import content_of, field_of
 from backend.utils.types import Envelope, MessageHandler, State
 
@@ -66,7 +66,7 @@ STRUCTURED_OUTPUT_PROMPT = """\
     - 五金：螺丝、螺母、扳手、钻头、管件、阀门、轴承等工具或零配件
     - 衣服：T恤、裤子、外套、裙子、鞋子等服装服饰
     - 布料：棉布、麻布、涤纶、无纺布等面料或织物
-    
+
     如果不是指定品类，需要进行意图矫正。
     - 明确属于指定品类 → 意图矫正为 query_inventory
     - 明确不属于指定品类 → 意图矫正为 chat
@@ -267,7 +267,7 @@ class BuiltinImpl:
 
     @hookimpl
     async def dispatch_outbound(self, message: Envelope) -> bool:
-        content = content_of(message)
+        content_of(message)
         session_id = field_of(message, "session_id")
         if field_of(message, "output_channel") != "cli":
             logger.info("session.run.outbound session_id={}", session_id)
@@ -303,7 +303,7 @@ class BuiltinImpl:
         return default_tape_context()
 
     @hookimpl
-    def intent_detection(self, message: ChannelMessage, model_output: str, state: State) -> None:
+    def intent_detection(self, message: ChannelMessage, model_output: str, state: State) -> None:  # noqa: C901 - inventory intent scoring (keyword + model + embedding)
         if state.get("kind") == "command":
             return
         parsed: dict[str, object] = {}

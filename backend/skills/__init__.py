@@ -20,6 +20,8 @@ __all__ = [
     "SKILL_NAME_PATTERN",
     "SKILL_SOURCES",
     "SkillMetadata",
+    "_parse_frontmatter",
+    "_read_skill",
     "discover_skills",
     "render_skills_prompt",
 ]

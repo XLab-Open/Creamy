@@ -18,12 +18,12 @@ class SQL:
             # key: (field_val_tuple) -> total 累加
             merged: dict[tuple, int] = {}
             with engine.connect() as conn:
-                for tname, table in metadata.tables.items():
+                for _tname, table in metadata.tables.items():
                     table_columns = {col.name for col in table.c}
                     if not query_fields.issubset(table_columns):
                         continue
                     conditions = [table.c[key] == value for key, value in filters.items()]
-                    group_by_cols = [table.c[key] for key in filters.keys()]
+                    group_by_cols = [table.c[key] for key in filters]
 
                     # 所有 filter 字段 + 总数
                     stmt = (
@@ -38,7 +38,7 @@ class SQL:
                         merged[key] = merged.get(key, 0) + row["total"]
 
             # 还原成 list[dict]
-            return [{**dict(zip(query_fields, key)), "total": total} for key, total in merged.items()]
+            return [{**dict(zip(query_fields, key, strict=False)), "total": total} for key, total in merged.items()]
 
         except Exception:
             return []

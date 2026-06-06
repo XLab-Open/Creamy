@@ -12,7 +12,7 @@ class LLMDataset:
         host: str = "localhost",
         port: str = "5432",
         user: str = "postgres",
-        password: str = "lss1314",
+        password: str = "",
         dbname: str = "postgres",
     ):
 

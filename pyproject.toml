@@ -148,10 +148,14 @@ ignore = [
     "E731",   # allow assigning lambdas
     "TRY003", # allow long messages in raised exceptions (CLI/tooling)
     "S603",   # subprocess calls are intentional here
+    "RUF001", # ambiguous unicode in strings — intentional CJK text (inventory prompts)
+    "RUF002", # ambiguous unicode in docstrings — intentional CJK text
+    "RUF003", # ambiguous unicode in comments — intentional CJK text
 ]
 
 [tool.ruff.lint.per-file-ignores]
-"tests/*" = ["S101"] # asserts are fine in tests
+"tests/*" = ["S101"]                  # asserts are fine in tests
+"backend/inventory/*" = ["S608"]      # SQL built from controlled identifiers; values are bound params
 
 [tool.ruff.format]
 preview = true

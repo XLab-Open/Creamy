@@ -70,7 +70,7 @@ class LLMPostprocess:
             raise ValueError(f"unsafe SQL identifier: {value!r}")
         return value
 
-    def postprocess(self, model_output: str | dict, state: State) -> str:
+    def postprocess(self, model_output: str | dict, state: State) -> str:  # noqa: C901 - inventory query result shaping
         pgvector, engine = self.get_vector_db()
         if pgvector is None:
             return "数据库连接失败，请稍后再试"
