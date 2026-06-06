@@ -16,7 +16,7 @@ def _configure_logging() -> None:
 
     level = os.getenv("CREAMY_LOG_LEVEL")
     if not level:
-        from backend.architecture.agent.settings import load_settings
+        from backend.agent.settings import load_settings
 
         level = {0: "WARNING", 1: "INFO"}.get(load_settings().verbose, "DEBUG")
     logger.remove()

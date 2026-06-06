@@ -38,18 +38,18 @@ uv run pytest tests/test_framework.py::test_name -q
 resolve_session → load_state → build_prompt → run_model → save_state → render_outbound → dispatch_outbound
 ```
 
-- **The hook contract** is `backend/architecture/hooks/hookspecs.py` (`CreamyHookSpecs`); the built-in implementations are `backend/architecture/hooks/hook_impl.py`. Read these two first.
+- **The hook contract** is `backend/hooks/hookspecs.py` (`CreamyHookSpecs`); the built-in implementations are `backend/hooks/hook_impl.py`. Read these two first.
 - **The runtime** is `backend/app/framework.py` (`CreamyFramework`). `process_inbound()` drives a turn; hooks are dispatched through a hook-runtime abstraction (`call_many_sync` / firstresult), not by calling `hook.*` directly.
 - **Plugin precedence: last registered wins.** Built-ins register first (`name="builtin"`), then external plugins from the `creamy` entry-point group (`importlib.metadata.entry_points(group="creamy")`). A later plugin overrides a default for `firstresult` hooks. There are no privileged code paths.
 - `run_model` and `run_model_stream` are **mutually exclusive** — implement one, not both. `firstresult=True` hooks (`resolve_session`, `load_state`, `build_prompt`, `run_model*`, `provide_tape_store`, `build_tape_context`) take the first non-None result.
 
-**Channels share the pipeline.** `backend/architecture/channels/` defines the `Channel` abstraction plus CLI, Telegram, and Feishu adapters (provided via the `provide_channels` hook). An agent tuned in the terminal behaves identically in a group chat. The interactive CLI UI lives in `channels/cli.py` (prompt_toolkit full-screen TUI) + `channels/renderer.py` (rich rendering).
+**Channels share the pipeline.** `backend/channels/` defines the `Channel` abstraction plus CLI, Telegram, and Feishu adapters (provided via the `provide_channels` hook). An agent tuned in the terminal behaves identically in a group chat. The interactive CLI UI lives in `channels/cli.py` (prompt_toolkit full-screen TUI) + `channels/renderer.py` (rich rendering).
 
 **Extending — two mechanisms:**
 - **Plugins** = code: any object with `@hookimpl`-decorated methods (`from backend import hookimpl`), shipped as a package and registered under `[project.entry-points."creamy"]`. Plugin dependencies install into a *separate* uv project at `~/.creamy/creamy-project` (override `CREAMY_PROJECT`), managed by `creamy install` / `creamy update` — not the main venv.
-- **Skills** = data: a `SKILL.md` with validated frontmatter, discovered by `backend/architecture/skills/skills.py` and loaded on demand instead of imported. Bundled skills live in `backend/skills/`.
+- **Skills** = data: a `SKILL.md` with validated frontmatter, discovered by `backend/skills/skills.py` and loaded on demand instead of imported. Bundled skills live in `backend/skills/`.
 
-**State & tapes.** Per-session conversation state is recorded via a tape store (`provide_tape_store` hook; `backend/architecture/memory/`). An `AGENTS.md` present in the workspace is auto-folded into the system prompt.
+**State & tapes.** Per-session conversation state is recorded via a tape store (`provide_tape_store` hook; `backend/memory/`). An `AGENTS.md` present in the workspace is auto-folded into the system prompt.
 
 ## Conventions & gotchas
 

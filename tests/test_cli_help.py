@@ -2,7 +2,7 @@ from __future__ import annotations
 
 import pytest
 
-from backend.architecture.tool.toolimpl import show_help
+from backend.tools.toolimpl import show_help
 
 
 @pytest.mark.asyncio

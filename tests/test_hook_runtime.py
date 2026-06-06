@@ -1,9 +1,9 @@
 import pluggy
 import pytest
 
-from backend.architecture.core.events import AsyncStreamEvents, StreamEvent
-from backend.architecture.hooks.hook_runtime import HookRuntime
-from backend.architecture.hooks.hookspecs import CREAMY_HOOK_NAMESPACE, CreamyHookSpecs, hookimpl
+from backend.core.events import AsyncStreamEvents, StreamEvent
+from backend.hooks.hook_runtime import HookRuntime
+from backend.hooks.hookspecs import CREAMY_HOOK_NAMESPACE, CreamyHookSpecs, hookimpl
 
 
 def _runtime_with_plugins(*plugins: tuple[str, object]) -> HookRuntime:

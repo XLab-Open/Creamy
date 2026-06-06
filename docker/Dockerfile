@@ -44,7 +44,7 @@ RUN uv sync --no-dev --no-editable && uv pip install "any-llm-sdk[gemini,xai]" &
 
 WORKDIR /workspace
 
-# Keep in sync with backend/architecture/agent/settings.py:DEFAULT_HOME (~/.creamy).
+# Keep in sync with backend/agent/settings.py:DEFAULT_HOME (~/.creamy).
 VOLUME /root/.creamy
 
 ENTRYPOINT ["/usr/bin/tini", "--"]

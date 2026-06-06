@@ -10,12 +10,12 @@ import pytest
 from langchain_core.language_models import BaseChatModel
 from langchain_core.messages import AIMessage, AIMessageChunk
 
-from backend.architecture.agent.agent import Agent
-from backend.architecture.context.context import default_tape_context
-from backend.architecture.core.engine import ModelEngine
-from backend.architecture.core.store import InMemoryTapeStore
-from backend.architecture.llm.graph import run_step, stream_step
-from backend.architecture.tool.tools import REGISTRY, tool
+from backend.agent.agent import Agent
+from backend.context.context import default_tape_context
+from backend.core.engine import ModelEngine
+from backend.core.store import InMemoryTapeStore
+from backend.llm.graph import run_step, stream_step
+from backend.tools.tools import REGISTRY, tool
 
 
 class FakeChatModel(BaseChatModel):
@@ -72,7 +72,7 @@ async def _new_tape(name: str = "t1"):
 
 
 def _settings():
-    from backend.architecture.agent.settings import AgentSettings
+    from backend.agent.settings import AgentSettings
 
     return AgentSettings(model="fake:test")
 
@@ -196,7 +196,7 @@ async def test_agent_run_end_to_end_text(monkeypatch, tmp_path) -> None:
 
     fake = FakeChatModel(reply=AIMessage(content="final answer"))
     monkeypatch.setattr(
-        "backend.architecture.llm.graph.build_chat_model",
+        "backend.llm.graph.build_chat_model",
         lambda settings, model=None: fake,
     )
 
@@ -308,7 +308,7 @@ async def test_agent_run_stream_end_to_end(monkeypatch, tmp_path) -> None:
 
     fake = StreamFakeChatModel(chunks=[AIMessageChunk(content="strea"), AIMessageChunk(content="med!")])
     monkeypatch.setattr(
-        "backend.architecture.llm.graph.build_chat_model",
+        "backend.llm.graph.build_chat_model",
         lambda settings, model=None: fake,
     )
 
