@@ -5,12 +5,14 @@ import contextlib
 import json
 from time import monotonic
 from typing import Any, ClassVar
+
 from aiohttp import ClientSession
 from loguru import logger
-from backend.architecture.channels.base import Channel
-from backend.architecture.utils.types import MessageHandler
+
 from backend.architecture.agent.settings import FeishuSettings
+from backend.architecture.channels.base import Channel
 from backend.architecture.channels.message import ChannelMessage, MediaItem
+from backend.architecture.utils.types import MessageHandler
 
 _MSG_TYPE_TO_MEDIA_TYPE: dict[str, str] = {
     "image": "image",
@@ -61,7 +63,7 @@ class FeishuChannel(Channel):
             self._ws_ping_task = None
         if self._ws_client is not None:
             with contextlib.suppress(Exception):
-                await self._ws_client._disconnect()  # noqa: SLF001
+                await self._ws_client._disconnect()
             self._ws_client = None
         logger.info("feishu.stopped")
 
@@ -104,8 +106,8 @@ class FeishuChannel(Channel):
             event_handler=event_handler,  # 把上面注册好的事件处理器挂上去。
             log_level=lark.LogLevel.INFO,  # 设置日志级别。
         )
-        await self._ws_client._connect()  # noqa: SLF001 # 真正建立到飞书的 WS 连接（握手完成才继续）。
-        self._ws_ping_task = asyncio.create_task(self._ws_client._ping_loop())  # noqa: SLF001 # 启动心跳定时器，定期发送心跳包保持连接活跃。
+        await self._ws_client._connect()  # 真正建立到飞书的 WS 连接（握手完成才继续）。
+        self._ws_ping_task = asyncio.create_task(self._ws_client._ping_loop())  # 启动心跳定时器，定期发送心跳包保持连接活跃。
         try:
             await stop_event.wait() # 主协程在这里“挂起等待停机信号”，连接持续工作。
         finally:  # 无论正常退出、异常、取消，都会执行清理：
@@ -116,7 +118,7 @@ class FeishuChannel(Channel):
                 self._ws_ping_task = None
             if self._ws_client is not None: # 断开 WS 连接。
                 with contextlib.suppress(Exception): # 等待 WS 连接断开。
-                    await self._ws_client._disconnect()  # noqa: SLF001 # 断开 WS 连接。
+                    await self._ws_client._disconnect()  # 断开 WS 连接。
                 self._ws_client = None # 清空客户端引用。
 
     async def send(self, message: ChannelMessage) -> None:
@@ -332,9 +334,8 @@ class FeishuChannel(Channel):
         params = {"type": file_type}
         headers = {"Authorization": f"Bearer {token}"}
         url = f"{self._settings.base_url.rstrip('/')}{path}"
-        async with ClientSession() as session:
-            async with session.get(url, params=params, headers=headers) as response:
-                if response.status >= 400:
-                    body = await response.text()
-                    raise RuntimeError(f"Failed to download Feishu resource: status={response.status}, body={body}")
-                return await response.read()
+        async with ClientSession() as session, session.get(url, params=params, headers=headers) as response:
+            if response.status >= 400:
+                body = await response.text()
+                raise RuntimeError(f"Failed to download Feishu resource: status={response.status}, body={body}")
+            return await response.read()

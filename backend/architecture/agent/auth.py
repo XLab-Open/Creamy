@@ -2,7 +2,12 @@ import os
 from pathlib import Path
 
 import typer
-from republic.auth.openai_codex import CodexOAuthLoginError, OpenAICodexOAuthTokens, login_openai_codex_oauth
+
+from backend.architecture.agent.codex_oauth import (
+    CodexOAuthLoginError,
+    OpenAICodexOAuthTokens,
+    login_openai_codex_oauth,
+)
 
 DEFAULT_CODEX_REDIRECT_URI = "http://localhost:1455/auth/callback"
 app = typer.Typer(name="login", help="Authentication related commands")

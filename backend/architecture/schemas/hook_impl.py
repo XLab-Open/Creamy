@@ -1,15 +1,16 @@
+import json
 import sys
 from datetime import UTC, datetime
 from pathlib import Path
 from typing import cast
 
-import json
 import typer
 from loguru import logger
-from republic import AsyncStreamEvents, TapeContext
-from republic.tape import TapeStore
 
 from backend.app.framework import CreamyFramework
+from backend.architecture.agent.agent import Agent
+from backend.architecture.channels.base import Channel
+from backend.architecture.channels.message import ChannelMessage, MediaItem
 from backend.architecture.constants.sqlconstant import (
     _INVENTORY_KEYWORDS,
     INTENT_INVENTORY_SCORE_THRESHOLD,
@@ -17,16 +18,16 @@ from backend.architecture.constants.sqlconstant import (
     INTENT_WEIGHT_KEYWORD,
     INTENT_WEIGHT_MODEL,
 )
-from backend.architecture.llm.embedding import Embedding
-from backend.architecture.agent.agent import Agent
 from backend.architecture.context.context import default_tape_context
-from backend.architecture.channels.base import Channel
-from backend.architecture.channels.message import ChannelMessage, MediaItem
-from backend.architecture.utils.envelope import content_of, field_of
-from backend.architecture.schemas.hookspecs import hookimpl
-from backend.architecture.utils.types import Envelope, MessageHandler, State
-from backend.architecture.plugins.postprocess import LLMPostprocess
+from backend.architecture.core.events import AsyncStreamEvents
+from backend.architecture.core.store import TapeStore
+from backend.architecture.core.tape_types import TapeContext
+from backend.architecture.llm.embedding import Embedding
 from backend.architecture.plugins.logicfuction import _inventory_embedding_signal
+from backend.architecture.plugins.postprocess import LLMPostprocess
+from backend.architecture.schemas.hookspecs import hookimpl
+from backend.architecture.utils.envelope import content_of, field_of
+from backend.architecture.utils.types import Envelope, MessageHandler, State
 
 AGENTS_FILE_NAME = "AGENTS.md"
 DEFAULT_SYSTEM_PROMPT = """\
@@ -181,7 +182,7 @@ class BuiltinImpl:
 
         media = field_of(message, "media") or []
         if not media:
-            logger.info("session.run.prompt state: text")
+            # logger.info("session.run.prompt state: text")
             return text
 
         media_parts: list[dict] = []
@@ -199,7 +200,7 @@ class BuiltinImpl:
                     attachment_desc += "]"
                     media_parts.append({"type": "text", "text": attachment_desc})
         if media_parts:
-            logger.info("session.run.prompt state: media")
+            # logger.info("session.run.prompt state: media")
             return [{"type": "text", "text": text}, *media_parts]
         return text
 
@@ -303,7 +304,7 @@ class BuiltinImpl:
     @hookimpl
     def intent_detection(self, message: ChannelMessage, model_output: str, state: State) -> None:
         if state.get("kind") == "command":
-            return 
+            return
         parsed: dict[str, object] = {}
         if isinstance(model_output, str) and model_output.strip():
             try:
@@ -318,18 +319,21 @@ class BuiltinImpl:
         clarify =parsed.get("intent")
         if clarify == "clarify_intent" or clarify == "clarify_target":
             state["intent"] = clarify
-            logger.info("session.run.intent_detection intent: {}", clarify)
+            # logger.info("session.run.intent_detection intent: {}", clarify)
             return
 
         try:
             content = json.loads(content_of(message))
-        except Exception as e:
+        except Exception:
             content = content_of(message)
-        content       = content["message"]
+        # Channels wrap content as {"message": ...}; the CLI sends a plain string.
+        if isinstance(content, dict):
+            content = content.get("message", "")
+        content = str(content)
         keyword_score = 1.0 if any(keyword in content for keyword in _INVENTORY_KEYWORDS) else 0.0
         model_score   = 1.0 if str(parsed.get("intent", "")).strip() == "query_inventory" else 0.0
         embedding_score, embedding_ok = _inventory_embedding_signal(self._intent_embedding_client,
-                                                                    content, 
+                                                                    content,
                                                                     self._inventory_proto_embeddings)
 
         w_kw = float(INTENT_WEIGHT_KEYWORD)
@@ -346,7 +350,7 @@ class BuiltinImpl:
         intent = "query_inventory" if fused >= threshold else "chat"
 
         state["intent"] = intent
-        logger.info("session.run.intent_detection intent: {}", intent)
+        # logger.info("session.run.intent_detection intent: {}", intent)
 
     @hookimpl
     def postprocess_model_output(self, model_output: str, state: State) -> str:
@@ -355,9 +359,9 @@ class BuiltinImpl:
 
         try:
             model_output = json.loads(model_output)
-        except Exception as e:
+        except Exception:
             return model_output
-        
+
         if state.get("intent") == "query_inventory":
             model_output = self.llm_postprocess.postprocess(model_output, state)
         elif state.get("intent") in ("clarify_intent", "clarify_target"):

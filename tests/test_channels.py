@@ -7,7 +7,6 @@ from pathlib import Path
 from types import SimpleNamespace
 
 import pytest
-from republic import StreamEvent
 
 from backend.architecture.channels.cli import CliChannel
 from backend.architecture.channels.feishu import FeishuChannel
@@ -15,6 +14,7 @@ from backend.architecture.channels.handler import BufferedMessageHandler
 from backend.architecture.channels.manager import ChannelManager
 from backend.architecture.channels.message import ChannelMessage
 from backend.architecture.channels.telegram import CreamyMessageFilter, TelegramChannel, TelegramMessageParser
+from backend.architecture.core.events import StreamEvent
 
 
 class FakeChannel:
@@ -491,7 +491,7 @@ async def test_feishu_handle_event_payload_builds_channel_message(monkeypatch: p
             "content": '{"text":"hello"}',
         },
     }
-    await channel._handle_event_payload(payload)  # noqa: SLF001
+    await channel._handle_event_payload(payload)
 
     assert len(received) == 1
     inbound = received[0]

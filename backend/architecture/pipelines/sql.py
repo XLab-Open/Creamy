@@ -1,5 +1,9 @@
-from sqlalchemy import and_, MetaData, select, Engine, func
-from typing import Any, Mapping
+from collections.abc import Mapping
+from typing import Any
+
+from sqlalchemy import Engine, MetaData, and_, func, select
+
+
 class SQL:
     def __init__(self):
         pass
@@ -21,7 +25,7 @@ class SQL:
                         continue
                     conditions    = [table.c[key] == value for key, value in filters.items()]
                     group_by_cols = [table.c[key] for key in filters.keys()]
-                    
+
                     # 所有 filter 字段 + 总数
                     stmt = (
                         select(*group_by_cols, func.count().label("total"))

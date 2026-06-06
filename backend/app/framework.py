@@ -10,13 +10,13 @@ import pluggy
 import typer
 from dotenv import load_dotenv
 from loguru import logger
-from republic import AsyncTapeStore, RepublicError, TapeContext
-from republic.core.errors import ErrorKind
-from republic.tape import TapeStore
 
-from backend.architecture.utils.envelope import content_of, field_of, unpack_batch
+from backend.architecture.core.errors import ErrorKind, RepublicError
+from backend.architecture.core.store import AsyncTapeStore, TapeStore
+from backend.architecture.core.tape_types import TapeContext
 from backend.architecture.schemas.hook_runtime import HookRuntime
 from backend.architecture.schemas.hookspecs import CREAMY_HOOK_NAMESPACE, CreamyHookSpecs
+from backend.architecture.utils.envelope import content_of, field_of, unpack_batch
 from backend.architecture.utils.types import Envelope, MessageHandler, OutboundChannelRouter, TurnResult
 
 if TYPE_CHECKING:

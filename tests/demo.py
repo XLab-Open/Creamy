@@ -3,10 +3,10 @@ Republic + DeepSeek (OpenAI 兼容接口) Demo
 通过自定义 api_key_resolver 实现
 """
 
-from republic import LLM
 import os
-from typing import Optional
 from datetime import datetime, timedelta
+
+from republic import LLM
 
 
 class DeepSeekKeyResolver:
@@ -14,8 +14,8 @@ class DeepSeekKeyResolver:
     DeepSeek API Key 解析器
     模拟 Republic 官方 OAuth Resolver 的行为模式
     """
-    
-    def __init__(self, api_key: Optional[str] = None):
+
+    def __init__(self, api_key: str | None = None):
         """
         初始化解析器
         
@@ -29,10 +29,10 @@ class DeepSeekKeyResolver:
             raise RuntimeError(
                 "请设置 DEEPSEEK_API_KEY 环境变量，或直接传入 api_key 参数"
             )
-        
+
         # 模拟 token 信息（用于演示刷新机制）
-        self._fetched_at: Optional[datetime] = None
-        
+        self._fetched_at: datetime | None = None
+
     def __call__(self, provider: str | None = None) -> str:
         """
         当 LLM 需要 API Key 时会调用此方法
@@ -49,17 +49,17 @@ class DeepSeekKeyResolver:
         # 例如：检查 key 是否过期，如果过期则重新获取
         if self._needs_refresh():
             self._refresh()
-        
+
         return self._api_key
-    
+
     def _needs_refresh(self) -> bool:
         """检查是否需要刷新（演示用，DeepSeek API Key 通常不过期）"""
         if self._fetched_at is None:
             return True
-        
+
         # 模拟：每 24 小时刷新一次（实际 DeepSeek Key 不需要）
         return datetime.now() - self._fetched_at > timedelta(hours=24)
-    
+
     def _refresh(self) -> None:
         """刷新 Key（实际使用时可以在这里实现动态获取逻辑）"""
         # 实际使用时，可以在这里：
@@ -71,7 +71,7 @@ class DeepSeekKeyResolver:
 
 
 def create_deepseek_llm(
-    api_key: Optional[str] = None,
+    api_key: str | None = None,
     model: str = "deepseek-chat"
 ) -> LLM:
     """
@@ -86,14 +86,14 @@ def create_deepseek_llm(
     Returns:
         配置好的 LLM 实例
     """
-    
+
     # 注意：Republic 可能需要在底层支持自定义的 model 前缀
     # 如果 "deepseek:" 前缀不工作，可以尝试使用 OpenAI 兼容的 base_url
     # 但 Republic 版本可能有限制，这里展示的是概念性实现
-    
+
     # 创建自定义解析器
     key_resolver = DeepSeekKeyResolver(api_key)
-    
+
     # 方式一：如果 Republic 支持自定义提供商
     try:
         # llm = LLM(
@@ -116,13 +116,13 @@ def create_deepseek_llm(
         return llm
     except Exception as e:
         print(f"[WARN] deepseek: 前缀失败: {e}")
-    
+
     # 方式二：尝试使用 OpenAI 格式（如果 Republic 底层支持）
     # 这需要 Republic 版本允许传递额外的参数如 base_url
     # 由于 Republic API 限制，这里作为示例保留
     print("[INFO] 当前 Republic 版本可能不直接支持自定义提供商")
     print("[INFO] 建议使用 OpenRouter 方案替代，或等待 Republic 更新")
-    
+
     # 回退方案：使用 OpenRouter 调用 DeepSeek
     print("[INFO] 回退到 OpenRouter 方案...")
     openrouter_key = os.getenv("OPENROUTER_API_KEY")
@@ -131,7 +131,7 @@ def create_deepseek_llm(
             "请设置 OPENROUTER_API_KEY 环境变量，"
             "或通过 https://openrouter.io/keys 获取"
         )
-    
+
     return LLM(
         model="openrouter:deepseek/deepseek-chat",
         api_key=openrouter_key,
@@ -142,19 +142,19 @@ def create_deepseek_llm(
 
 def main():
     """主函数：演示如何使用"""
-    
+
     # 方式一：从环境变量读取
     # export DEEPSEEK_API_KEY="your-api-key-here"
     try:
         llm = create_deepseek_llm()
-        
+
         # 发送聊天请求
         result = llm.chat(
             "请用一句话介绍你自己，并说明你是什么模型",
             max_tokens=100
         )
         print(f"DeepSeek 回复: {result}")
-        
+
     except RuntimeError as e:
         print(f"错误: {e}")
         print("\n请确保已设置环境变量:")

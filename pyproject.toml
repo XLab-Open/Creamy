@@ -35,8 +35,12 @@ dependencies = [
     "rich>=13.0.0",
     "prompt-toolkit>=3.0.0",
     # Agent runtime & model access
-    "republic>=0.5.4",
+    "republic>=0.5.4",  # only used for the Codex OAuth flow now (behind backend/architecture/agent/codex_oauth.py)
     "any-llm-sdk[anthropic]",
+    "langchain-core>=0.3.0",
+    "langchain-openai>=0.2.0",
+    "langchain-anthropic>=0.3.0",
+    "langgraph>=0.2.0",
     "loguru>=0.7.2",
     "rapidfuzz>=3.14.3",
     # Networking & channels

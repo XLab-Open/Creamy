@@ -8,8 +8,8 @@ from typing import Any, cast
 
 import pluggy
 from loguru import logger
-from republic import AsyncStreamEvents, StreamEvent, StreamState
 
+from backend.architecture.core.events import AsyncStreamEvents, StreamEvent, StreamState
 from backend.architecture.utils.types import Envelope
 
 
@@ -25,7 +25,7 @@ class HookRuntime:
             call_kwargs = self._kwargs_for_impl(impl, kwargs)
             value = await self._invoke_impl_async(
                 hook_name=hook_name, impl=impl, call_kwargs=call_kwargs, kwargs=kwargs
-            ) 
+            )
             if value is _SKIP_VALUE:
                 continue
             if value is not None:
@@ -125,7 +125,7 @@ class HookRuntime:
     ) -> Any:
         value = impl.function(**call_kwargs)
         if inspect.isawaitable(value):
-            value = await value 
+            value = await value
         return value
 
     def _invoke_impl_sync(

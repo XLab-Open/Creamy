@@ -13,10 +13,16 @@ from pathlib import Path
 from typing import Any, cast
 
 from loguru import logger
-from republic import AsyncTapeStore, TapeEntry, TapeQuery
-from republic.tape import AsyncTapeStoreAdapter, InMemoryQueryMixin, InMemoryTapeStore, TapeStore
-from republic.tape.store import is_async_tape_store
 
+from backend.architecture.core.store import (
+    AsyncTapeStore,
+    AsyncTapeStoreAdapter,
+    InMemoryQueryMixin,
+    InMemoryTapeStore,
+    TapeStore,
+    is_async_tape_store,
+)
+from backend.architecture.core.tape_types import TapeEntry, TapeQuery
 from backend.architecture.utils.utils import get_entry_text
 
 current_store: contextvars.ContextVar[TapeStore] = contextvars.ContextVar("current_store")

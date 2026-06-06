@@ -6,7 +6,7 @@ from collections.abc import AsyncIterable, Callable, Coroutine
 from dataclasses import dataclass, field
 from typing import Any, Protocol
 
-from republic import StreamEvent
+from backend.architecture.core.events import StreamEvent
 
 type Envelope = Any
 type State = dict[str, Any]

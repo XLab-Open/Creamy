@@ -5,12 +5,12 @@ from types import SimpleNamespace
 
 import pytest
 import typer
-from republic import AsyncStreamEvents, StreamEvent
 from typer.testing import CliRunner
 
+from backend.app.framework import CreamyFramework
 from backend.architecture.channels.base import Channel
 from backend.architecture.channels.message import ChannelMessage
-from backend.app.framework import CreamyFramework
+from backend.architecture.core.events import AsyncStreamEvents, StreamEvent
 from backend.architecture.schemas.hookspecs import hookimpl
 
 

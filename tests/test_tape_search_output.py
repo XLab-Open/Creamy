@@ -3,9 +3,9 @@ from __future__ import annotations
 from dataclasses import dataclass
 
 import pytest
-from republic import ToolContext
 
 import backend.architecture.tool.toolimpl as builtin_tools
+from backend.architecture.core.tools import ToolContext
 from backend.architecture.tool.toolimpl import tape_search
 
 

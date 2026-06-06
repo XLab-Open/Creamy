@@ -8,8 +8,10 @@ from pathlib import Path
 from typing import Any, cast
 
 from pydantic.dataclasses import dataclass
-from republic import LLM, AsyncTapeStore, Tape, TapeEntry, TapeQuery
 
+from backend.architecture.core.engine import ModelEngine, Tape
+from backend.architecture.core.store import AsyncTapeStore
+from backend.architecture.core.tape_types import TapeEntry, TapeQuery
 from backend.architecture.memory.store import ForkTapeStore
 
 
@@ -34,8 +36,8 @@ class AnchorSummary:
 
 
 class TapeService:
-    def __init__(self, llm: LLM, archive_path: Path, store: ForkTapeStore) -> None:
-        self._llm = llm
+    def __init__(self, engine: ModelEngine, archive_path: Path, store: ForkTapeStore) -> None:
+        self._llm = engine
         self._archive_path = archive_path
         self._store = store
 

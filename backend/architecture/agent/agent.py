@@ -16,26 +16,20 @@ from pathlib import Path
 from typing import Any, Literal, overload
 
 from loguru import logger
-from republic import (
-    LLM,
-    AsyncStreamEvents,
-    AsyncTapeStore,
-    RepublicError,
-    StreamEvent,
-    StreamState,
-    TapeContext,
-    ToolAutoResult,
-    ToolContext,
-)
-from republic.tape import InMemoryTapeStore, Tape
 
 from backend.app.framework import CreamyFramework
 from backend.architecture.agent.settings import AgentSettings, load_settings
+from backend.architecture.core.engine import ModelEngine, Tape
+from backend.architecture.core.errors import RepublicError
+from backend.architecture.core.events import AsyncStreamEvents, StreamEvent, StreamState
+from backend.architecture.core.store import AsyncTapeStore, InMemoryTapeStore
+from backend.architecture.core.tape_types import TapeContext
+from backend.architecture.core.tools import ToolAutoResult, ToolContext
+from backend.architecture.llm.graph import run_step, stream_step
 from backend.architecture.memory.store import ForkTapeStore
 from backend.architecture.memory.tape import TapeService
-from backend.architecture.llm.llm_parsing import install_completion_tool_call_compat
 from backend.architecture.skills.skills import discover_skills, render_skills_prompt
-from backend.architecture.tool.tools import REGISTRY, model_tools, render_tools_prompt
+from backend.architecture.tool.tools import REGISTRY, render_tools_prompt
 from backend.architecture.utils.types import State
 from backend.architecture.utils.utils import workspace_from_state
 
@@ -267,7 +261,7 @@ class Agent:
         next_prompt = prompt
         for step in range(1, self.settings.max_steps + 1):
             start = time.monotonic()
-            logger.info("loop.step step={} tape={} model={}", step, tape.name, display_model)
+            # logger.info("loop.step step={} tape={} model={}", step, tape.name, display_model)
             await self.tapes.append_event(tape.name, "loop.step.start", {"step": step, "prompt": next_prompt})
             try:
                 output = await self._run_once(
@@ -390,7 +384,7 @@ class Agent:
         for step in range(1, self.settings.max_steps + 1):
             start = time.monotonic()
             outcome = _ToolAutoOutcome(kind="text", text="", error="")
-            logger.info("loop.step step={} tape={} model={}", step, tape.name, display_model)
+            # logger.info("loop.step step={} tape={} model={}", step, tape.name, display_model)
             await self.tapes.append_event(tape.name, "loop.step.start", {"step": step, "prompt": next_prompt})
             output = await self._run_once(
                 tape=tape,
@@ -556,20 +550,22 @@ class Agent:
         )
         async with asyncio.timeout(self.settings.model_timeout_seconds):
             if stream_output:
-                return await tape.stream_events_async(
+                return await stream_step(
+                    tape=tape,
                     prompt=prompt,
                     system_prompt=system_prompt,
-                    max_tokens=self.settings.max_tokens,
-                    tools=model_tools(tools),
+                    tools=tools,
                     model=model,
+                    settings=self.settings,
                 )
             else:
-                return await tape.run_tools_async(
+                return await run_step(
+                    tape=tape,
                     prompt=prompt,
                     system_prompt=system_prompt,
-                    max_tokens=self.settings.max_tokens,
-                    tools=model_tools(tools),
+                    tools=tools,
                     model=model,
+                    settings=self.settings,
                 )
 
     def _system_prompt(self, prompt: str | list[dict], state: State, allowed_skills: set[str] | None = None) -> str:
@@ -612,85 +608,10 @@ def _resolve_tool_auto_result(output: ToolAutoResult) -> _ToolAutoOutcome:
     error_kind = getattr(output.error.kind, "value", str(output.error.kind))
     return _ToolAutoOutcome(kind="error", error=f"{error_kind}: {output.error.message}")
 
-from typing import Optional
-from datetime import datetime, timedelta
-class DeepSeekKeyResolver:
-    """
-    DeepSeek API Key 解析器
-    模拟 Republic 官方 OAuth Resolver 的行为模式
-    """
-    
-    def __init__(self, api_key: Optional[str] = None):
-        """
-        初始化解析器
-        
-        Args:
-            api_key: 可选的 API Key,如果不提供则从环境变量读取
-        """
-        # self._api_key = api_key or os.getenv("DEEPSEEK_API_KEY")
-        # self._api_key = "sk-061b9c9c9f40428ab374680cd56ff05d"
-        self._api_key = "sk-qtrdoedrxuzrprgmaboxhsvvrsoowdikzoaevwaejsukpkbv"
-        if not self._api_key:
-            raise RuntimeError(
-                "请设置 DEEPSEEK_API_KEY 环境变量，或直接传入 api_key 参数"
-            )
-        
-        # 模拟 token 信息（用于演示刷新机制）
-        self._fetched_at: Optional[datetime] = None
-        
-    def __call__(self, provider: str | None = None) -> str:
-        """
-        当 LLM 需要 API Key 时会调用此方法
-        Republic 会通过调用这个可调用对象来获取密钥
-        
-        Returns:
-            有效的 API Key 字符串
-        """
-        # provider 参数由 republic 传入（例如 "deepseek"、"openrouter"）。
-        # 本示例不区分 provider，统一返回当前 key。
-        _ = provider
-
-        # 这里可以添加刷新逻辑
-        # 例如：检查 key 是否过期，如果过期则重新获取
-        if self._needs_refresh():
-            self._refresh()
-        
-        return self._api_key
-    
-    def _needs_refresh(self) -> bool:
-        """检查是否需要刷新(演示用, DeepSeek API Key 通常不过期）"""
-        if self._fetched_at is None:
-            return True
-        
-        # 模拟：每 24 小时刷新一次（实际 DeepSeek Key 不需要）
-        return datetime.now() - self._fetched_at > timedelta(hours=24)
-    
-    def _refresh(self) -> None:
-        """刷新 Key(实际使用时可以在这里实现动态获取逻辑)"""
-        # 实际使用时，可以在这里：
-        # - 从远程服务获取新 Key
-        # - 刷新 OAuth Token
-        # - 从密钥管理服务读取
-        self._fetched_at = datetime.now()
-        print(f"[INFO] API Key 已刷新，获取时间: {self._fetched_at}")
-
-def _build_llm(settings: AgentSettings, tape_store: AsyncTapeStore, tape_context: TapeContext) -> LLM:
-    from republic.auth.openai_codex import openai_codex_oauth_resolver
-
-    install_completion_tool_call_compat()
-    key_resolver = DeepSeekKeyResolver()
-    return LLM(
-        model=settings.model,
-        api_key=settings.api_key,
-        api_base=settings.api_base,
-        fallback_models=settings.fallback_models,
-        # api_key_resolver=key_resolver,
-        tape_store=tape_store,
-        client_args=settings.client_args,
-        api_format=settings.api_format,
-        context=tape_context,
-        verbose=settings.verbose,
-    )
+def _build_llm(settings: AgentSettings, tape_store: AsyncTapeStore, tape_context: TapeContext) -> ModelEngine:
+    """Build the project tape-storage engine. Model calls run through LangGraph, not here."""
+    _ = settings
+    return ModelEngine(tape_store, tape_context)
 
 @dataclass(frozen=True)
 class Args:

@@ -5,11 +5,9 @@ import shlex
 import sys
 
 import pytest
-from republic import ToolContext
-from republic.core.errors import ErrorKind
-from republic.tools.executor import ToolExecutor
-
-import backend.architecture.tool.toolimpl  as builtin_tools
+import backend.architecture.tool.toolimpl as builtin_tools
+from backend.architecture.core.tools import ToolContext
+from backend.architecture.llm.messages import build_lc_tools
 from backend.architecture.tool.shelltool.shell_manager import ShellManager
 from backend.architecture.tool.toolimpl import bash, bash_output, kill_bash
 
@@ -53,27 +51,15 @@ async def test_foreground_bash_releases_shell_when_command_fails(tmp_path, monke
 
 @pytest.mark.asyncio
 async def test_bash_non_zero_exit_is_returned_as_tool_error(tmp_path) -> None:
+    """Through the LangGraph tool path a failing tool returns its error as text."""
     command = _python_shell("import sys; print('boom'); sys.exit(7)")
-    executor = ToolExecutor()
-    tool_call = {
-        "type": "function",
-        "function": {
-            "name": bash.name,
-            "arguments": {"cmd": command},
-        },
-    }
+    bash_tool = next(t for t in build_lc_tools([bash], _tool_context(tmp_path)) if t.name == "bash")
 
-    result = await executor.execute_async([tool_call], tools=[bash], context=_tool_context(tmp_path))
+    result = await bash_tool.ainvoke({"cmd": command})
 
-    assert result.error is not None
-    assert result.error.kind is ErrorKind.TOOL
-    assert len(result.tool_results) == 1
-    tool_result = result.tool_results[0]
-    assert tool_result["kind"] == "tool"
-    assert tool_result["message"] == "Tool 'bash' execution failed."
-    error_detail = tool_result["details"]["error"]
-    assert "command exited with code 7" in error_detail
-    assert "boom" in error_detail
+    assert "error:" in result
+    assert "command exited with code 7" in result
+    assert "boom" in result
 
 
 @pytest.mark.asyncio

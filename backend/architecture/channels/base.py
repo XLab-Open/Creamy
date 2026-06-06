@@ -3,9 +3,8 @@ from abc import ABC, abstractmethod
 from collections.abc import AsyncIterable
 from typing import ClassVar
 
-from republic import StreamEvent
-
 from backend.architecture.channels.message import ChannelMessage
+from backend.architecture.core.events import StreamEvent
 
 
 class Channel(ABC):

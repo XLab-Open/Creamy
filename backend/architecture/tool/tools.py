@@ -7,8 +7,9 @@ from typing import Any, overload
 
 from loguru import logger
 from pydantic import BaseModel
-from republic import Tool
-from republic import tool as republic_tool
+
+from backend.architecture.core.tools import Tool
+from backend.architecture.core.tools import tool as republic_tool
 
 # Central registry for tools. Tools defined with the @tool decorator are automatically added here.
 REGISTRY: dict[str, Tool] = {}

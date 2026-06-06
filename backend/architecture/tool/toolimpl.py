@@ -1,24 +1,29 @@
 from __future__ import annotations
 
-import os
 import asyncio
 import json
 import uuid
-import requests
-from pathlib import Path
 from datetime import datetime
+from pathlib import Path
 from typing import TYPE_CHECKING, Literal, cast
 
+import requests
 from pydantic import BaseModel, Field
-from republic import AsyncTapeStore, TapeQuery, ToolContext
 
-from backend.architecture.tool.shelltool.shell_manager import shell_manager
-from backend.architecture.skills.skills import discover_skills
-from backend.architecture.tool.tools import resolve_tool_names, tool
-from backend.architecture.tool.sqltool.inventory_query import InventoryQuery
-from backend.architecture.tool.filetool.file_impl import expansion_write_excel
 from backend.architecture.agent.settings import FeishuSettings
-from backend.architecture.tool.channeltool.tool_feishu import resolve_feishu_chat_id, get_feishu_tenant_access_token, send_feishu_message
+from backend.architecture.core.store import AsyncTapeStore
+from backend.architecture.core.tape_types import TapeQuery
+from backend.architecture.core.tools import ToolContext
+from backend.architecture.skills.skills import discover_skills
+from backend.architecture.tool.channeltool.tool_feishu import (
+    get_feishu_tenant_access_token,
+    resolve_feishu_chat_id,
+    send_feishu_message,
+)
+from backend.architecture.tool.filetool.file_impl import expansion_write_excel
+from backend.architecture.tool.shelltool.shell_manager import shell_manager
+from backend.architecture.tool.sqltool.inventory_query import InventoryQuery
+from backend.architecture.tool.tools import resolve_tool_names, tool
 
 if TYPE_CHECKING:
     from backend.architecture.agent.agent import Agent
@@ -163,7 +168,7 @@ def fs_edit(path: str, old: str, new: str, start: int = 0, *, context: ToolConte
 @tool(context=True, name="skill")
 def skill_describe(name: str, *, context: ToolContext) -> str:
     """Load the skill content by name. Return the location and skill content."""
-    from backend.architecture.utils import workspace_from_state
+    from backend.architecture.utils.utils import workspace_from_state
 
     allowed_skills = context.state.get("allowed_skills")
     if allowed_skills is not None and name.casefold() not in allowed_skills:
@@ -267,7 +272,7 @@ async def query_inventory(*, context: ToolContext) -> str:
         resolved_path = _resolve_cwd_path(f"inventory_{datetime.now().strftime("%Y_%m_%d_%H_%M")}.xlsx")
         resolved_path.parent.mkdir(parents=True, exist_ok=True)
         expansion_write_excel(results, str(resolved_path))
-        
+
         context.state["inventory_data"] = results
         context.state["inventory_count"] = len(results)
         context.state["excel_path"] = str(resolved_path)
