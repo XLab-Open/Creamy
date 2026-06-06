@@ -98,9 +98,9 @@ async def test_buffered_handler_passes_commands_through_immediately() -> None:
         debounce_seconds=0.01,
     )
 
-    await handler(_message(",help"))
+    await handler(_message("/help"))
 
-    assert handled == [",help"]
+    assert handled == ["/help"]
 
 
 @pytest.mark.asyncio
@@ -276,8 +276,8 @@ def test_cli_channel_normalize_input_prefixes_shell_commands() -> None:
     channel = CliChannel.__new__(CliChannel)
     channel._mode = "shell"
 
-    assert channel._normalize_input("ls") == ",ls"
-    assert channel._normalize_input(",help") == ",help"
+    assert channel._normalize_input("ls") == "/ls"
+    assert channel._normalize_input("/help") == "/help"
 
 
 @pytest.mark.asyncio
@@ -378,7 +378,7 @@ async def test_telegram_channel_send_extracts_json_message_and_skips_blank() -> 
 @pytest.mark.asyncio
 async def test_telegram_channel_build_message_returns_command_directly() -> None:
     channel = TelegramChannel(lambda message: None)
-    channel._parser = SimpleNamespace(parse=_async_return((",help", {"type": "text"})), get_reply=_async_return(None))
+    channel._parser = SimpleNamespace(parse=_async_return(("/help", {"type": "text"})), get_reply=_async_return(None))
 
     message = SimpleNamespace(chat_id=42)
 
@@ -386,7 +386,7 @@ async def test_telegram_channel_build_message_returns_command_directly() -> None
 
     assert result.channel == "telegram"
     assert result.chat_id == "42"
-    assert result.content == ",help"
+    assert result.content == "/help"
     assert result.output_channel == "telegram"
 
 

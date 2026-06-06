@@ -28,7 +28,7 @@ uv sync
 ## Run
 
 ```bash
-uv run creamy chat                        # interactive REPL
+uv run creamy cli                         # interactive REPL
 uv run creamy run "summarize this repo"   # one-shot turn
 uv run creamy gateway                     # listen on configured channels
 ```
@@ -103,15 +103,15 @@ on demand instead of imported as code.
 
 | Command              | Description                              |
 | -------------------- | ---------------------------------------- |
-| `creamy chat`        | Interactive REPL                         |
+| `creamy cli`         | Interactive REPL                         |
 | `creamy run MESSAGE` | Single turn, then exit                   |
 | `creamy gateway`     | Run channel listeners (Telegram, Feishu) |
 | `creamy install`     | Install / sync plugin dependencies       |
 | `creamy update`      | Upgrade plugin dependencies              |
 | `creamy login openai`| OpenAI Codex OAuth login                 |
 
-Lines beginning with `,` enter internal command mode (`,help`, `,skill name=...`,
-`,fs.read path=README.md`). `creamy install` / `creamy update` manage a separate uv
+Lines beginning with `/` enter internal command mode (`/help`, `/skill name=...`,
+`/fs.read path=README.md`). `creamy install` / `creamy update` manage a separate uv
 project for plugins, defaulting to `~/.creamy/creamy-project` (override with
 `CREAMY_PROJECT`).
 

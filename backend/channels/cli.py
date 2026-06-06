@@ -139,8 +139,9 @@ class CliChannel(Channel):
         self._tui_stream_idx: int | None = None
         self._follow_bottom = True
         # Mouse capture is OFF by default so the terminal's own click-drag text
-        # selection / copy keeps working. Ctrl-T flips it on for wheel scrolling.
-        self._mouse_capture = False
+        # Default on for wheel scrolling; Ctrl-T flips it off so native
+        # selection / copy works.
+        self._mouse_capture = True
 
     async def _refresh_tape_info(self) -> None:
         tape = self._agent.tapes.session_tape(self._message_template["session_id"], self._workspace)
@@ -191,9 +192,9 @@ class CliChannel(Channel):
     def _normalize_input(self, raw: str) -> str:
         if self._mode != "shell":
             return raw
-        if raw.startswith(","):
+        if raw.startswith("/"):
             return raw
-        return f",{raw}"
+        return f"/{raw}"
 
     def _prompt_styles(self) -> tuple[str, str]:
         if self._mode == "auto":
@@ -332,7 +333,7 @@ class CliChannel(Channel):
         buff.reset()
         if not text:
             return
-        if text in {",quit", ",exit"}:
+        if text in {"/quit", "/exit"}:
             if self._tui_app is not None:
                 self._tui_app.exit()
             return
@@ -468,14 +469,14 @@ class CliChannel(Channel):
             try:
                 raw = (await self._prompt.prompt_async(self._prompt_message)).strip()
             except KeyboardInterrupt:
-                self._renderer.info("Interrupted. Use ',quit' to exit.")
+                self._renderer.info("Interrupted. Use '/quit' to exit.")
                 continue
             except EOFError:
                 break
 
             if not raw:
                 continue
-            if raw in {",quit", ",exit"}:
+            if raw in {"/quit", "/exit"}:
                 break
 
             self._renderer.console.print()

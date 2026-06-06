@@ -78,7 +78,7 @@ def chat(
     chat_id: str = typer.Option("local", "--chat-id", help="Chat id"),
     session_id: str | None = typer.Option(None, "--session-id", help="Optional session id"),
 ) -> None:
-    """Start a REPL chat session."""
+    """Start the interactive CLI REPL."""
     from backend.channels.manager import ChannelManager
 
     framework = ctx.ensure_object(CreamyFramework)
