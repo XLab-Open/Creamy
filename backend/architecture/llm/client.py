@@ -1,15 +1,20 @@
 """LangChain chat-model factory — project-owned.
 
-Builds a ``ChatOpenAI`` for the configured ``provider:model``. OpenAI-compatible
-providers (openai, openrouter, …) all route through ``ChatOpenAI`` with an
-optional ``api_base``. When the OpenAI api key is actually a Codex OAuth token,
-the client is pointed at the ChatGPT Codex Responses backend.
+Builds a LangChain chat model from the configured ``provider:model``:
+
+* ``anthropic`` → ``ChatAnthropic``
+* everything else (openai, openrouter, deepseek, siliconflow, … all
+  OpenAI-compatible) → ``ChatOpenAI`` with an optional ``api_base``
+
+When the OpenAI api key is actually a Codex OAuth token, the client is pointed
+at the ChatGPT Codex Responses backend.
 """
 
 from __future__ import annotations
 
 from typing import TYPE_CHECKING, Any
 
+from langchain_anthropic import ChatAnthropic
 from langchain_openai import ChatOpenAI
 
 from backend.architecture.agent.codex_oauth import (
@@ -19,6 +24,8 @@ from backend.architecture.agent.codex_oauth import (
 )
 
 if TYPE_CHECKING:
+    from langchain_core.language_models import BaseChatModel
+
     from backend.architecture.agent.settings import AgentSettings
 
 
@@ -35,33 +42,36 @@ def _resolve_for_provider(value: str | dict[str, str] | None, provider: str) -> 
     return value
 
 
-def build_chat_model(settings: AgentSettings, model: str | None = None) -> ChatOpenAI:
-    """Build a LangChain ``ChatOpenAI`` from settings (+ optional model override)."""
+def build_chat_model(settings: AgentSettings, model: str | None = None) -> BaseChatModel:
+    """Build a LangChain chat model from settings (+ optional ``provider:model`` override)."""
     provider, model_name = _split_provider_model(model or settings.model)
     api_key = _resolve_for_provider(settings.api_key, provider)
     api_base = _resolve_for_provider(settings.api_base, provider)
 
-    kwargs: dict[str, Any] = {
-        "model": model_name,
-        "max_tokens": settings.max_tokens,
-    }
+    common: dict[str, Any] = {"model": model_name, "max_tokens": settings.max_tokens}
     if settings.model_timeout_seconds is not None:
-        kwargs["timeout"] = settings.model_timeout_seconds
+        common["timeout"] = settings.model_timeout_seconds
+
+    if provider == "anthropic":
+        anthropic_kwargs: dict[str, Any] = {"api_key": api_key or "none", **common}
+        if api_base:
+            anthropic_kwargs["base_url"] = api_base
+        return ChatAnthropic(**anthropic_kwargs)
 
     if provider == "openai" and is_codex_token(api_key):
-        assert api_key is not None
+        token = api_key or ""
         return ChatOpenAI(
-            openai_api_key=api_key,
+            openai_api_key=token,
             openai_api_base=resolve_codex_api_base(api_base),
-            default_headers=build_codex_headers(api_key),
+            default_headers=build_codex_headers(token),
             use_responses_api=True,
-            **kwargs,
+            **common,
         )
 
     return ChatOpenAI(
         openai_api_key=api_key or "none",
         openai_api_base=api_base,
-        **kwargs,
+        **common,
     )
 
 
