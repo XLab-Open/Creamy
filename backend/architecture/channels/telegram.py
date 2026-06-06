@@ -12,10 +12,10 @@ from telegram.ext import Application, CommandHandler, ContextTypes, filters
 from telegram.ext import MessageHandler as TelegramMessageHandler
 from telegram.request import HTTPXRequest
 
-from backend.architecture.channels.base import Channel
-from backend.architecture.utils.types import MessageHandler
 from backend.architecture.agent.settings import TelegramSettings
+from backend.architecture.channels.base import Channel
 from backend.architecture.channels.message import ChannelMessage, MediaItem, MediaType
+from backend.architecture.utils.types import MessageHandler
 from backend.architecture.utils.utils import exclude_none
 
 NO_ACCESS_MESSAGE = "You are not allowed to chat with me. Please deploy your own instance of Creamy."

@@ -4,8 +4,8 @@ from typing import Any
 from unittest.mock import AsyncMock
 
 import pytest
-from republic import AsyncStreamEvents, StreamEvent
 
+from backend.architecture.core.events import AsyncStreamEvents, StreamEvent
 from backend.architecture.tool.toolimpl import run_subagent
 from backend.architecture.tool.tools import REGISTRY, tool
 

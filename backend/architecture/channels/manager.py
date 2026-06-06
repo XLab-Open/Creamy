@@ -4,16 +4,17 @@ import functools
 from collections.abc import AsyncIterable, Collection
 
 from loguru import logger
-from republic import StreamEvent
 
 from backend.app.framework import CreamyFramework
-from backend.architecture.channels.base import Channel
 from backend.architecture.agent.settings import ChannelSettings
+from backend.architecture.channels.base import Channel
 from backend.architecture.channels.handler import BufferedMessageHandler
 from backend.architecture.channels.message import ChannelMessage
+from backend.architecture.core.events import StreamEvent
 from backend.architecture.utils.envelope import content_of, field_of
 from backend.architecture.utils.types import Envelope, MessageHandler
 from backend.architecture.utils.utils import wait_until_stopped
+
 
 class ChannelManager:
     def __init__(

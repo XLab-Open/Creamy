@@ -6,7 +6,7 @@ import json
 from collections.abc import Iterable
 from typing import Any
 
-from republic import TapeContext, TapeEntry
+from backend.architecture.core.tape_types import TapeContext, TapeEntry
 
 
 def default_tape_context() -> TapeContext:

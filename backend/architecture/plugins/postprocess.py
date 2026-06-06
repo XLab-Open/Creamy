@@ -1,13 +1,15 @@
-import re
-import sqlalchemy
 import json
-from backend.architecture.llm.embedding import Embedding
+import re
+
+import sqlalchemy
+from loguru import logger
+from sqlalchemy.exc import ArgumentError, SQLAlchemyError
+
 from backend.architecture.agent.settings import SQLSettings
+from backend.architecture.llm.embedding import Embedding
+from backend.architecture.pipelines.sql import SQL
 from backend.architecture.plugins.logicfuction import DataFilter, Pgvector
 from backend.architecture.utils.types import State
-from backend.architecture.pipelines.sql import SQL
-from loguru import logger
-from sqlalchemy.exc import SQLAlchemyError, ArgumentError
 
 _IDENTIFIER_RE = re.compile(r"^[A-Za-z_][A-Za-z0-9_]*$")
 
@@ -40,7 +42,7 @@ class LLMPostprocess:
         if self._sql_set_error:
             logger.error("SQL settings are not configured")
             return None
-        
+
         timeout = self._sql_set.connect_timeout
         try:
             engine = sqlalchemy.create_engine(
@@ -59,7 +61,7 @@ class LLMPostprocess:
             logger.error("Database error while creating engine or connecting: {}", e)
             return None
         return Pgvector(engine, self.embedding.embed_query), engine
-    
+
     def _safe_identifier(self, value: str) -> str:
         if not _IDENTIFIER_RE.fullmatch(value):
             raise ValueError(f"unsafe SQL identifier: {value!r}")
@@ -70,7 +72,7 @@ class LLMPostprocess:
         if pgvector is None:
             return "数据库连接失败，请稍后再试"
         data_filter = DataFilter(pgvector)
-        
+
         if isinstance(model_output, str):
             model_output = json.loads(model_output)
 
@@ -85,7 +87,7 @@ class LLMPostprocess:
         if not resolutions:
             final_rendered += "帮您查询了数据库，未找到相关物品\n"
         for res in resolutions:
-            
+
             item_norm = res.get("input_item")
             query = {key: item_norm[key] for key in item_norm if key != "confidence" and item_norm[key] not in [None, ""]}
             if set(query) == {"name"}:
@@ -111,5 +113,5 @@ class LLMPostprocess:
         question = model_output.get("question")
         if question is None:
             return "无法确定用户意图，请重新输入"
-        
+
         return question

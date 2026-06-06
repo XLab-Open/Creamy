@@ -8,10 +8,10 @@ from types import SimpleNamespace
 
 import pytest
 
-from backend.architecture.schemas.hook_impl import BuiltinImpl
+from backend.app.framework import CreamyFramework
 from backend.architecture.channels.message import ChannelMessage, MediaItem
 from backend.architecture.channels.telegram import TelegramChannel, _extract_media_items
-from backend.app.framework import CreamyFramework
+from backend.architecture.schemas.hook_impl import BuiltinImpl
 
 # ---------------------------------------------------------------------------
 # MediaItem & ChannelMessage

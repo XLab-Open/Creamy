@@ -5,9 +5,10 @@ from __future__ import annotations
 from typing import TYPE_CHECKING, Any
 
 import pluggy
-from republic import AsyncStreamEvents, AsyncTapeStore, TapeContext
-from republic.tape import TapeStore
 
+from backend.architecture.core.events import AsyncStreamEvents
+from backend.architecture.core.store import AsyncTapeStore, TapeStore
+from backend.architecture.core.tape_types import TapeContext
 from backend.architecture.utils.types import Envelope, MessageHandler, State
 
 if TYPE_CHECKING:

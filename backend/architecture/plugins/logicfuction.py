@@ -1,12 +1,14 @@
 
-import re
 import math
+import re
 from collections.abc import Callable, Mapping, Sequence
 from difflib import SequenceMatcher
 from typing import Any, Protocol
-from sqlalchemy import text, MetaData
+
 from loguru import logger
-from backend.architecture.constants.sqlconstant import SKU_MASTER, _INVENTORY_INTENT_PROTOTYPES
+from sqlalchemy import MetaData, text
+
+from backend.architecture.constants.sqlconstant import _INVENTORY_INTENT_PROTOTYPES
 from backend.architecture.llm.embedding import Embedding
 
 _IDENTIFIER_RE = re.compile(r"^[A-Za-z_][A-Za-z0-9_]*$")
@@ -60,7 +62,7 @@ def _cosine_similarity(left: list[float], right: list[float]) -> float:
         return 0.0
     return dot / denom
 
-def _ensure_inventory_prototype_embeddings(inventory_proto_embeddings: list[list[float]] | None, 
+def _ensure_inventory_prototype_embeddings(inventory_proto_embeddings: list[list[float]] | None,
     intent_embedding_client: Embedding | None) -> list[list[float]] | None:
 
     if inventory_proto_embeddings is not None:
@@ -115,8 +117,8 @@ class Pgvector:
         self.embedding_column = _safe_identifier(embedding_column) # 数据库表里存放向量的字段名
         self.return_columns = tuple(_safe_identifier(column) for column in return_columns)
 
-    def similarity_search_with_score(self, 
-                                     query: str | Mapping[str, Any], 
+    def similarity_search_with_score(self,
+                                     query: str | Mapping[str, Any],
                                      k: int = 5,
                                      use_rule: bool = False) -> list[tuple[dict[str, Any], float]]:
         query_embedding = _vector_literal(self.embedding_fn(_query_text(query)))
@@ -295,7 +297,7 @@ class DataFilter:
                 "match_reason": "no candidate",
                 "needs_human_review": True,
             }
-        
+
         scored = [self.score_candidate(item_norm, c) for c in candidates]
         best = max(scored, key=lambda x: x["final_score"])
 

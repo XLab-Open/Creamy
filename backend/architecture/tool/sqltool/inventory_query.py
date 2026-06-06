@@ -1,5 +1,6 @@
-from sqlalchemy import Engine, create_engine, text, inspect
+from sqlalchemy import Engine, create_engine, inspect, text
 from sqlalchemy.orm import Session
+
 from backend.architecture.agent.settings import SQLSettings
 
 # ── 配置 ──────────────────────────────────────────────────────────────────────

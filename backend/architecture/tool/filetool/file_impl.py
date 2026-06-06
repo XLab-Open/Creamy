@@ -2,8 +2,8 @@ import os
 from datetime import datetime
 
 import openpyxl
-from loguru import logger
 from openpyxl.styles import Alignment, Font, PatternFill
+
 
 def expansion_write_excel(data: list, output_path: str) -> str:
     """Generate an Excel table with formatting"""
@@ -62,4 +62,4 @@ def expansion_write_excel(data: list, output_path: str) -> str:
         return f"Excel 已生成：{output_path}，共 {len(data)} 条记录"
 
     except Exception as e:
-        return f"Excel 生成失败：{str(e)}"
+        return f"Excel 生成失败：{e!s}"

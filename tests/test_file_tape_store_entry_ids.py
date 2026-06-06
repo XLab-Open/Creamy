@@ -1,8 +1,8 @@
 from __future__ import annotations
 
 import pytest
-from republic import TapeEntry
 
+from backend.architecture.core.tape_types import TapeEntry
 from backend.architecture.memory.store import FileTapeStore, ForkTapeStore
 
 

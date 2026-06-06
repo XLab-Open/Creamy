@@ -1,0 +1,43 @@
+# Build context is the repo root — keep only what the image needs
+# (pyproject.toml, uv.lock, README.md, LICENSE, docker/dockerentry.sh, backend/).
+
+# Python
+.venv/
+.venvs/
+**/__pycache__/
+**/*.py[cod]
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+*.egg-info/
+build/
+dist/
+
+# Node / web (not needed in the runtime image)
+**/node_modules/
+website/
+frontend/
+
+# Tests, and the docker assets (except the entry script, which the image needs)
+tests/
+docker/
+!docker/dockerentry.sh
+
+# VCS & tooling
+.git/
+.gitignore
+.github/
+.vscode/
+.idea/
+.pre-commit-config.yaml
+Makefile
+
+# Local secrets & runtime data (provided via env_file / volumes at runtime)
+.env
+*.env
+!env.example
+.creamy/
+.bub/
+
+# OS noise
+.DS_Store

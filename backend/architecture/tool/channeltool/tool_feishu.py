@@ -1,6 +1,9 @@
 import json
+
 import requests
+
 from backend.architecture.agent.settings import FeishuSettings
+
 
 def get_feishu_tenant_access_token(settings: FeishuSettings) -> str:
     """Fetch tenant_access_token via app_id/app_secret (no Bearer header on this endpoint)."""
