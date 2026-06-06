@@ -12,7 +12,7 @@ the storage subset ``read_messages_async`` / ``append_async`` / ``query_async`` 
 from __future__ import annotations
 
 import inspect
-from typing import Any
+from typing import Any, cast
 
 from backend.core.store import (
     AsyncTapeStore,
@@ -91,7 +91,7 @@ class ModelEngine:
         if is_async_tape_store(tape_store):
             self._store: AsyncTapeStore = tape_store
         else:
-            self._store = AsyncTapeStoreAdapter(tape_store)
+            self._store = AsyncTapeStoreAdapter(cast("TapeStore", tape_store))
         self._context = context or TapeContext()
 
     @property

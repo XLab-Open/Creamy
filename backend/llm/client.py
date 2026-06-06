@@ -16,6 +16,7 @@ from typing import TYPE_CHECKING, Any
 
 from langchain_anthropic import ChatAnthropic
 from langchain_openai import ChatOpenAI
+from pydantic import SecretStr
 
 from backend.agent.codex_oauth import (
     build_codex_headers,
@@ -61,16 +62,16 @@ def build_chat_model(settings: AgentSettings, model: str | None = None) -> BaseC
     if provider == "openai" and is_codex_token(api_key):
         token = api_key or ""
         return ChatOpenAI(
-            openai_api_key=token,
-            openai_api_base=resolve_codex_api_base(api_base),
+            api_key=SecretStr(token),
+            base_url=resolve_codex_api_base(api_base),
             default_headers=build_codex_headers(token),
             use_responses_api=True,
             **common,
         )
 
     return ChatOpenAI(
-        openai_api_key=api_key or "none",
-        openai_api_base=api_base,
+        api_key=SecretStr(api_key or "none"),
+        base_url=api_base,
         **common,
     )
 

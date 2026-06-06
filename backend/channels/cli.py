@@ -451,7 +451,7 @@ class CliChannel(Channel):
         ansi = self._renderer.welcome_ansi(
             model=self._agent.settings.model, workspace=str(self._workspace), width=width
         )
-        return list(to_formatted_text(ANSI(ansi.rstrip("\n"))))
+        return list(to_formatted_text(ANSI(ansi.rstrip("\n"))))  # type: ignore[arg-type]
 
     # ── Plain REPL (opt-in via CREAMY_SIMPLE) ───────────────────────────────
     async def _run_simple(self) -> None:

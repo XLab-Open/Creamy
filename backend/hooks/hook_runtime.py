@@ -177,7 +177,10 @@ class HookRuntime:
         """Run the first `run_model_stream` hook found and fallback to `run_model` hook."""
         for _, plugin in reversed(self._plugin_manager.list_name_plugin()):
             if hasattr(plugin, "run_model_stream"):
-                return await self.call_first("run_model_stream", prompt=prompt, session_id=session_id, state=state)
+                return cast(
+                    "AsyncStreamEvents | None",
+                    await self.call_first("run_model_stream", prompt=prompt, session_id=session_id, state=state),
+                )
             elif hasattr(plugin, "run_model"):
 
                 async def iterator() -> AsyncGenerator[StreamEvent, None]:

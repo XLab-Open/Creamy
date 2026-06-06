@@ -67,7 +67,7 @@ def extract_codex_account_id(access_token: str) -> str | None:
 
 def is_codex_token(access_token: str | None) -> bool:
     """A Codex OAuth access token is a JWT carrying a ``chatgpt_account_id``."""
-    return bool(access_token) and extract_codex_account_id(access_token) is not None
+    return access_token is not None and extract_codex_account_id(access_token) is not None
 
 
 def resolve_codex_api_base(api_base: str | None = None) -> str:

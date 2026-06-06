@@ -4,7 +4,7 @@ from __future__ import annotations
 
 from dataclasses import dataclass
 from pathlib import Path
-from typing import TYPE_CHECKING, Any
+from typing import TYPE_CHECKING, Any, cast
 
 import pluggy
 import typer
@@ -159,7 +159,7 @@ class CreamyFramework:
         else:
             parts: list[str] = []
             if self._outbound_router is not None:
-                stream = self._outbound_router.wrap_stream(inbound, stream)
+                stream = self._outbound_router.wrap_stream(inbound, stream)  # type: ignore[assignment]
             async for event in stream:
                 if event.kind == "text":
                     parts.append(str(event.data.get("delta", "")))
@@ -241,7 +241,7 @@ class CreamyFramework:
         return channels
 
     def get_tape_store(self) -> TapeStore | AsyncTapeStore | None:
-        return self._hook_runtime.call_first_sync("provide_tape_store")
+        return cast("TapeStore | AsyncTapeStore | None", self._hook_runtime.call_first_sync("provide_tape_store"))
 
     def get_system_prompt(self, prompt: str | list[dict], state: dict[str, Any]) -> str:
         return "\n\n".join(
@@ -251,9 +251,9 @@ class CreamyFramework:
         )
 
     def build_tape_context(self) -> TapeContext:
-        return self._hook_runtime.call_first_sync("build_tape_context")
+        return cast("TapeContext", self._hook_runtime.call_first_sync("build_tape_context"))
 
-    async def _postprocess_model_output(self, inbound: Envelope, model_output: str, state: dict[str, Any]) -> None:
+    async def _postprocess_model_output(self, inbound: Envelope, model_output: str, state: dict[str, Any]) -> str:
         output = self._hook_runtime.call_first_sync("postprocess_model_output", model_output=model_output, state=state)
         if output is None:
             await self._hook_runtime.notify_error(
@@ -261,7 +261,7 @@ class CreamyFramework:
                 error=RuntimeError("no postprocess skill returned output"),
                 message=inbound,
             )
-        return output
+        return cast(str, output)
 
     async def _intent_detection(self, inbound: Envelope, model_output: str, state: dict[str, Any]) -> None:
         self._hook_runtime.call_first_sync("intent_detection", message=inbound, model_output=model_output, state=state)

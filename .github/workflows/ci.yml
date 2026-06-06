@@ -58,9 +58,7 @@ jobs:
         run: uv run ruff format --check .
 
   lint:
-    # Non-blocking for now: ruff lint + mypy still carry pre-existing debt in the
-    # inventory/hook layers. Drop continue-on-error to enforce once it is cleared.
-    name: lint & types (non-blocking)
+    name: lint & types
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -77,8 +75,6 @@ jobs:
 
       - name: Ruff lint
         run: uv run ruff check --no-fix .
-        continue-on-error: true
 
       - name: Mypy
         run: uv run mypy backend
-        continue-on-error: true

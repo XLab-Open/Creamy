@@ -111,11 +111,11 @@ class Agent:
         allowed_tools: Collection[str] | None = None,
     ) -> AsyncStreamEvents:
         if not prompt:
-            events = [
+            error_events = [
                 StreamEvent("text", {"delta": "error: empty prompt"}),
                 StreamEvent("final", {"text": "error: empty prompt", "ok": False}),
             ]
-            return self._events_from_iterable(events)
+            return self._events_from_iterable(error_events)
 
         tape = self.tapes.session_tape(session_id, workspace_from_state(state))
         tape.context = replace(tape.context, state=state)
@@ -558,7 +558,7 @@ class Agent:
                     settings=self.settings,
                 )
             else:
-                return await run_step(
+                return await run_step(  # type: ignore[return-value]  # StepResult is duck-compatible with ToolAutoResult
                     tape=tape,
                     prompt=prompt,
                     system_prompt=system_prompt,
