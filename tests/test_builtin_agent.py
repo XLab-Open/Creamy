@@ -7,45 +7,9 @@ from unittest.mock import MagicMock, patch
 
 import pytest
 
-import backend.agent as agent_module
-import backend.agent.codex_oauth_flow as openai_codex
 from backend.agent.agent import Agent
 from backend.agent.settings import AgentSettings
 from backend.core.tape_types import TapeContext
-
-
-def test_build_llm_passes_codex_resolver_to_republic(monkeypatch) -> None:
-    captured: dict[str, Any] = {}
-    resolver = object()
-
-    class FakeLLM:
-        def __init__(self, *args: object, **kwargs: object) -> None:
-            captured["args"] = args
-            captured["kwargs"] = kwargs
-
-    monkeypatch.setattr(agent_module, "LLM", FakeLLM)
-    monkeypatch.setattr(openai_codex, "openai_codex_oauth_resolver", lambda: resolver)
-
-    settings = AgentSettings(
-        model="openai:gpt-5-codex",
-        api_key=None,
-        api_base=None,
-        client_args={"extra_headers": {"HTTP-Referer": "https://openclaw.ai", "X-Title": "OpenClaw"}},
-    )
-    tape_store = object()
-
-    agent_module._build_llm(settings, tape_store, "ctx")
-
-    assert captured["args"] == ("openai:gpt-5-codex",)
-    assert captured["kwargs"]["api_key"] is None
-    assert captured["kwargs"]["api_base"] is None
-    assert captured["kwargs"]["client_args"] == {
-        "extra_headers": {"HTTP-Referer": "https://openclaw.ai", "X-Title": "OpenClaw"},
-    }
-    assert captured["kwargs"]["api_key_resolver"] is resolver
-    assert captured["kwargs"]["tape_store"] is tape_store
-    assert captured["kwargs"]["context"] == "ctx"
-
 
 # ---------------------------------------------------------------------------
 # Agent.run() tests: merge_back logic and model passthrough

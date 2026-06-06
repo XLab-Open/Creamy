@@ -8,8 +8,13 @@ import pytest
 from backend.app.framework import CreamyFramework
 from backend.channels.message import ChannelMessage
 from backend.core.events import AsyncStreamEvents, StreamEvent
+from backend.hooks.hook_impl import (
+    AGENTS_FILE_NAME,
+    DEFAULT_SYSTEM_PROMPT,
+    STRUCTURED_OUTPUT_PROMPT,
+    BuiltinImpl,
+)
 from backend.memory.store import FileTapeStore
-from backend.hooks.hook_impl import AGENTS_FILE_NAME, DEFAULT_SYSTEM_PROMPT, BuiltinImpl
 
 
 class RecordingLifespan:
@@ -153,7 +158,7 @@ def test_system_prompt_appends_workspace_agents_file(tmp_path: Path) -> None:
 
     result = impl.system_prompt(prompt="hello", state={"_runtime_workspace": str(tmp_path)})
 
-    assert result == DEFAULT_SYSTEM_PROMPT + "\n\nlocal rules"
+    assert result == DEFAULT_SYSTEM_PROMPT + "\n\nlocal rules\n\n" + STRUCTURED_OUTPUT_PROMPT
 
 
 def test_system_prompt_ignores_missing_agents_file(tmp_path: Path) -> None:
@@ -161,7 +166,7 @@ def test_system_prompt_ignores_missing_agents_file(tmp_path: Path) -> None:
 
     result = impl.system_prompt(prompt="hello", state={"_runtime_workspace": str(tmp_path)})
 
-    assert result == DEFAULT_SYSTEM_PROMPT + "\n\n"
+    assert result == DEFAULT_SYSTEM_PROMPT + "\n\n\n\n" + STRUCTURED_OUTPUT_PROMPT
 
 
 def test_provide_channels_returns_cli_and_telegram(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
@@ -184,21 +189,29 @@ def test_provide_channels_returns_cli_and_telegram(tmp_path: Path, monkeypatch: 
         def enabled(self) -> bool:
             return True
 
-    import bub.channels.cli
-    import bub.channels.telegram
+    class DummyFeishuChannel:
+        name = "feishu"
 
-    monkeypatch.setattr(bub.channels.cli, "CliChannel", DummyCliChannel)
-    monkeypatch.setattr(bub.channels.telegram, "TelegramChannel", DummyTelegramChannel)
+        def __init__(self, on_receive) -> None:
+            self.on_receive = on_receive
+
+    import backend.channels.cli
+    import backend.channels.feishu
+    import backend.channels.telegram
+
+    monkeypatch.setattr(backend.channels.cli, "CliChannel", DummyCliChannel)
+    monkeypatch.setattr(backend.channels.telegram, "TelegramChannel", DummyTelegramChannel)
+    monkeypatch.setattr(backend.channels.feishu, "FeishuChannel", DummyFeishuChannel)
 
     def message_handler(message) -> None:
         return None
 
     channels = impl.provide_channels(message_handler)
 
-    assert [channel.name for channel in channels] == ["telegram", "cli"]
+    assert [channel.name for channel in channels] == ["telegram", "feishu", "cli"]
     assert channels[0].on_receive is message_handler
-    assert channels[1].on_receive is message_handler
-    assert channels[1].agent is agent
+    assert channels[2].on_receive is message_handler
+    assert channels[2].agent is agent
 
 
 @pytest.mark.asyncio

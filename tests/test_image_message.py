@@ -195,7 +195,7 @@ async def test_telegram_build_message_extracts_media_items(monkeypatch: pytest.M
         parse=_async_return(("[Photo message]", photo_metadata)),
         get_reply=_async_return(None),
     )
-    monkeypatch.setattr("bub.channels.telegram.MESSAGE_FILTER.filter", lambda message: True)
+    monkeypatch.setattr("backend.channels.telegram.MESSAGE_FILTER.filter", lambda message: True)
 
     message = SimpleNamespace(chat_id=42)
     result = await channel._build_message(message)  # type: ignore[arg-type]
@@ -212,7 +212,7 @@ async def test_telegram_build_message_no_media_for_text(monkeypatch: pytest.Monk
         parse=_async_return(("hello", {"type": "text", "sender_id": "7"})),
         get_reply=_async_return(None),
     )
-    monkeypatch.setattr("bub.channels.telegram.MESSAGE_FILTER.filter", lambda message: True)
+    monkeypatch.setattr("backend.channels.telegram.MESSAGE_FILTER.filter", lambda message: True)
 
     message = SimpleNamespace(chat_id=42)
     result = await channel._build_message(message)  # type: ignore[arg-type]

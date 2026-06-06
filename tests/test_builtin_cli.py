@@ -6,7 +6,7 @@ from pathlib import Path
 from typer.testing import CliRunner
 
 import backend.agent.auth as auth
-import backend.channels.cli as cli
+import backend.cli.cli as cli
 from backend.app.framework import CreamyFramework
 
 

@@ -139,6 +139,10 @@ async def test_process_inbound_defaults_to_non_streaming_run_model() -> None:
             return "plain-text"
 
         @hookimpl
+        def postprocess_model_output(self, model_output, state) -> str:
+            return model_output
+
+        @hookimpl
         async def save_state(self, session_id, state, message, model_output) -> None:
             saved_outputs.append(model_output)
 
@@ -189,6 +193,10 @@ async def test_process_inbound_streams_when_requested() -> None:  # noqa: C901
                 yield StreamEvent("final", {"text": "streamed", "ok": True})
 
             return AsyncStreamEvents(iterator(), state=SimpleNamespace(error=None, usage=None))
+
+        @hookimpl
+        def postprocess_model_output(self, model_output, state) -> str:
+            return model_output
 
         @hookimpl
         async def save_state(self, session_id, state, message, model_output) -> None:
