@@ -1,13 +1,12 @@
 """OpenAI Codex OAuth — project seam.
 
-The PKCE login flow, token storage and refresh (``~/.codex/auth.json``) are still
-provided by republic and re-exported here so call sites depend on this module
-instead of ``republic.auth.openai_codex`` (a full reimplementation can later drop
-in behind this seam).
+The PKCE login flow, token storage and refresh (``~/.codex/auth.json``) live in
+``codex_oauth_flow`` (project-owned, authlib + stdlib) and are re-exported here so
+call sites depend on this seam module.
 
 The Codex *request* shaping (ChatGPT backend base URL, headers, account-id) is
-project-owned and republic-free, so :mod:`backend.architecture.llm.client` can
-point a LangChain ``ChatOpenAI`` at the Codex Responses backend.
+also project-owned, so :mod:`backend.architecture.llm.client` can point a
+LangChain ``ChatOpenAI`` at the Codex Responses backend.
 """
 
 from __future__ import annotations
@@ -15,9 +14,9 @@ from __future__ import annotations
 import base64
 import json
 
-# Re-exported republic OAuth flow (login / resolver / token storage). Kept behind
-# this seam during migration; consumed by ``auth.py`` and :func:`codex_access_token`.
-from republic.auth.openai_codex import (
+# Project-owned OAuth flow (login / resolver / token storage), re-exported behind
+# this seam; consumed by ``auth.py`` and :func:`codex_access_token`.
+from backend.architecture.agent.codex_oauth_flow import (
     CodexOAuthLoginError,
     OpenAICodexOAuthTokens,
     load_openai_codex_oauth_tokens,
