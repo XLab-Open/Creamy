@@ -130,6 +130,7 @@ STRUCTURED_OUTPUT_PROMPT = """\
 </structured_output>
 """
 
+
 class BuiltinImpl:
     """Default hook implementations for basic runtime operations."""
 
@@ -173,7 +174,7 @@ class BuiltinImpl:
         content = content_of(message)
         if content.startswith(","):
             message.kind = "command"
-            state['kind'] = "command"
+            state["kind"] = "command"
             return content
         context = field_of(message, "context_str")
         now = datetime.now(UTC).strftime("%Y-%m-%dT%H:%M:%SZ")
@@ -316,7 +317,7 @@ class BuiltinImpl:
         elif isinstance(model_output, dict):
             parsed = model_output
 
-        clarify =parsed.get("intent")
+        clarify = parsed.get("intent")
         if clarify == "clarify_intent" or clarify == "clarify_target":
             state["intent"] = clarify
             # logger.info("session.run.intent_detection intent: {}", clarify)
@@ -331,10 +332,10 @@ class BuiltinImpl:
             content = content.get("message", "")
         content = str(content)
         keyword_score = 1.0 if any(keyword in content for keyword in _INVENTORY_KEYWORDS) else 0.0
-        model_score   = 1.0 if str(parsed.get("intent", "")).strip() == "query_inventory" else 0.0
-        embedding_score, embedding_ok = _inventory_embedding_signal(self._intent_embedding_client,
-                                                                    content,
-                                                                    self._inventory_proto_embeddings)
+        model_score = 1.0 if str(parsed.get("intent", "")).strip() == "query_inventory" else 0.0
+        embedding_score, embedding_ok = _inventory_embedding_signal(
+            self._intent_embedding_client, content, self._inventory_proto_embeddings
+        )
 
         w_kw = float(INTENT_WEIGHT_KEYWORD)
         w_mo = float(INTENT_WEIGHT_MODEL)

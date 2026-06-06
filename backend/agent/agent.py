@@ -608,10 +608,12 @@ def _resolve_tool_auto_result(output: ToolAutoResult) -> _ToolAutoOutcome:
     error_kind = getattr(output.error.kind, "value", str(output.error.kind))
     return _ToolAutoOutcome(kind="error", error=f"{error_kind}: {output.error.message}")
 
+
 def _build_llm(settings: AgentSettings, tape_store: AsyncTapeStore, tape_context: TapeContext) -> ModelEngine:
     """Build the project tape-storage engine. Model calls run through LangGraph, not here."""
     _ = settings
     return ModelEngine(tape_store, tape_context)
+
 
 @dataclass(frozen=True)
 class Args:

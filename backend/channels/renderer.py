@@ -46,18 +46,10 @@ def _creamy_logo() -> Text:
     logo.append(CREAMY_CONE, style="bold yellow")
     return logo
 
+
 # A box that draws ONLY the inner vertical divider between columns
 # (no outer border, no horizontal rules) — used inside the welcome panel.
-_SPLIT_BOX = box.Box(
-    "    \n"
-    "  │ \n"
-    "    \n"
-    "  │ \n"
-    "    \n"
-    "    \n"
-    "  │ \n"
-    "    \n"
-)
+_SPLIT_BOX = box.Box("    \n  │ \n    \n  │ \n    \n    \n  │ \n    \n")
 
 
 def _creamy_version() -> str:

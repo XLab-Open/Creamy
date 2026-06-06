@@ -59,6 +59,7 @@ class SearchInput(BaseModel):
         description="Optional list of entry kinds to filter search results. Can include 'event', 'anchor', 'system', 'message', 'tool_call', 'tool_result'.",
     )
 
+
 class SubAgentInput(BaseModel):
     prompt: str | list[dict] = Field(
         ..., description="The initial prompt for the sub-agent, either as a string or a list of message parts."
@@ -263,13 +264,14 @@ async def web_fetch(url: str, headers: dict | None = None, timeout: int | None =
         response.raise_for_status()
         return await response.text()
 
+
 @tool(context=True, name="query.inventory")
 async def query_inventory(*, context: ToolContext) -> str:
     """Query the inventory of all parts in the database and write inventory.xlsx under cwd."""
     try:
         inventory_query = InventoryQuery()
         results = await asyncio.to_thread(inventory_query.query)  # 防止查库诸塞
-        resolved_path = _resolve_cwd_path(f"inventory_{datetime.now().strftime("%Y_%m_%d_%H_%M")}.xlsx")
+        resolved_path = _resolve_cwd_path(f"inventory_{datetime.now().strftime('%Y_%m_%d_%H_%M')}.xlsx")
         resolved_path.parent.mkdir(parents=True, exist_ok=True)
         expansion_write_excel(results, str(resolved_path))
 
@@ -281,6 +283,7 @@ async def query_inventory(*, context: ToolContext) -> str:
         return "Failed to parse the results."
 
     return json.dumps(results, ensure_ascii=False)
+
 
 @tool(context=True, name="send.report")
 async def send_report(message: str, *, context: ToolContext) -> str:
@@ -317,7 +320,9 @@ async def send_report(message: str, *, context: ToolContext) -> str:
             auth_headers=auth_headers,
             chat_id=chat_id,
             msg_type="text",
-            content={"text": f"每日零件盘点报告 - {datetime.now().strftime("%Y-%m-%d-%H:%M:%S")}\n 详细数据见附件表格文件：{resolved_file.name}"},
+            content={
+                "text": f"每日零件盘点报告 - {datetime.now().strftime('%Y-%m-%d-%H:%M:%S')}\n 详细数据见附件表格文件：{resolved_file.name}"
+            },
         )
         send_feishu_message(
             base=base,
@@ -332,6 +337,7 @@ async def send_report(message: str, *, context: ToolContext) -> str:
     except Exception as e:
         # logger.exception("send.report failed")
         return f"❌ 飞书发送失败：{e}"
+
 
 @tool(name="subagent", context=True, model=SubAgentInput)
 async def run_subagent(param: SubAgentInput, *, context: ToolContext) -> str:

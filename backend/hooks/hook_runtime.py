@@ -179,6 +179,7 @@ class HookRuntime:
             if hasattr(plugin, "run_model_stream"):
                 return await self.call_first("run_model_stream", prompt=prompt, session_id=session_id, state=state)
             elif hasattr(plugin, "run_model"):
+
                 async def iterator() -> AsyncGenerator[StreamEvent, None]:
                     result = await self.call_first("run_model", prompt=prompt, session_id=session_id, state=state)
                     yield StreamEvent("text", {"delta": result})

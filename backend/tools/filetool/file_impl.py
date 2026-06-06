@@ -26,8 +26,8 @@ def expansion_write_excel(data: list, output_path: str) -> str:
             cell.alignment = Alignment(horizontal="center")
 
         # 数据行
-        fill_normal   = PatternFill(start_color="E8F5E9", end_color="E8F5E9", fill_type="solid")
-        fill_warning  = PatternFill(start_color="FFF9C4", end_color="FFF9C4", fill_type="solid")
+        fill_normal = PatternFill(start_color="E8F5E9", end_color="E8F5E9", fill_type="solid")
+        fill_warning = PatternFill(start_color="FFF9C4", end_color="FFF9C4", fill_type="solid")
         fill_critical = PatternFill(start_color="FFEBEE", end_color="FFEBEE", fill_type="solid")
 
         updated_at = datetime.now().strftime("%Y-%m-%d %H:%M")

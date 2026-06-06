@@ -9,13 +9,12 @@ REQUIRED_FIELDS = {"name", "spec", "brand", "material"}
 
 _engine: Engine | None = None
 
+
 def _get_engine() -> Engine:
     global _engine
     if _engine is None:
         s = SQLSettings()
-        _engine = create_engine(
-            f"postgresql+psycopg://{s.user}:{s.password}@{s.host}:{s.port}/{s.dbname}"
-        )
+        _engine = create_engine(f"postgresql+psycopg://{s.user}:{s.password}@{s.host}:{s.port}/{s.dbname}")
     return _engine
 
 
@@ -45,10 +44,7 @@ class InventoryQuery:
 
     def _build_sql(self, tables: list[str]) -> str:
         """Build UNION ALL + GROUP BY SQL"""
-        union_parts = [
-            f'SELECT name, spec, brand, material FROM "{t}"'
-            for t in tables
-        ]
+        union_parts = [f'SELECT name, spec, brand, material FROM "{t}"' for t in tables]
         union_sql = " UNION ALL ".join(union_parts)
         return f"""
             SELECT name, spec, brand, material, COUNT(*) AS total
@@ -94,9 +90,6 @@ class InventoryQuery:
         print(f"{'name':<15} {'spec':<10} {'brand':<12} {'material':<10} {'Total number':>6}")
         print("─" * 58)
         for row in results:
-            print(
-                f"{row['name']:<15} {row['spec']:<10} "
-                f"{row['brand']:<12} {row['material']:<10} {row['total']:>6}"
-            )
+            print(f"{row['name']:<15} {row['spec']:<10} {row['brand']:<12} {row['material']:<10} {row['total']:>6}")
         print("─" * 58)
         print(f"{len(results)} combinations, {sum(r['total'] for r in results)} records total\n")

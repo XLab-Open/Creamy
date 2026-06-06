@@ -222,7 +222,7 @@ class TelegramChannel(Channel):
         session_id = f"{self.name}:{chat_id}"
         content, metadata = await self._parser.parse(message)
         if content.startswith("/creamy "):
-            content = content[len("/creamy "):]
+            content = content[len("/creamy ") :]
 
         # Pass comma commands directly to the input handler
         if content.strip().startswith(","):

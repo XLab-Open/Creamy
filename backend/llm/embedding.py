@@ -4,6 +4,7 @@ from backend.agent.settings import EmbeddingSettings
 
 MAX_EMBEDDING_BATCH_SIZE = 25
 
+
 class Embedding:
     def __init__(
         self,
@@ -12,15 +13,15 @@ class Embedding:
         base_url: str = "https://dashscope.aliyuncs.com/api/v1/services/embeddings/text-embedding/text-embedding",
     ) -> None:
         self.model_name = model_name
-        self.api_key  = api_key
+        self.api_key = api_key
         self.base_url = base_url
         self._embedding_set = EmbeddingSettings()
 
-        self.set_embedding() # 默认，设置embedding模型
+        self.set_embedding()  # 默认，设置embedding模型
 
     def set_embedding(self):
         self.model_name = self._embedding_set.model_name
-        self.api_key    = self._embedding_set.api_key
+        self.api_key = self._embedding_set.api_key
 
     def embed_documents(self, texts: list[str]) -> list[list[float]]:
         embeddings: list[list[float]] = []

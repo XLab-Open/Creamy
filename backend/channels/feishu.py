@@ -19,6 +19,7 @@ _MSG_TYPE_TO_MEDIA_TYPE: dict[str, str] = {
     "post": "image",
 }
 
+
 class FeishuChannel(Channel):
     name = "feishu"
     _TOKEN_EXPIRE_SKEW_SECONDS: ClassVar[int] = 30
@@ -94,8 +95,9 @@ class FeishuChannel(Channel):
 
         # 创建事件分发器（飞书 SDK 的事件路由器），注册消息接收事件处理器，收到飞书消息时，转调你自己的 _on_ws_message 方法处理。同时把 lark 传进去用于序列化 event
         event_handler = (
-            lark.EventDispatcherHandler.builder("", "") # 创建事件分发器（飞书 SDK 的事件路由器）
-            .register_p2_im_message_receive_v1(lambda event: self._on_message(event, lark)) # 注册消息接收事件处理器
+            lark.EventDispatcherHandler
+            .builder("", "")  # 创建事件分发器（飞书 SDK 的事件路由器）
+            .register_p2_im_message_receive_v1(lambda event: self._on_message(event, lark))  # 注册消息接收事件处理器
             .build()
         )  # 收到飞书消息时，转调你自己的 _on_ws_message 方法处理。同时把 lark 传进去用于序列化 event
 
@@ -107,19 +109,21 @@ class FeishuChannel(Channel):
             log_level=lark.LogLevel.INFO,  # 设置日志级别。
         )
         await self._ws_client._connect()  # 真正建立到飞书的 WS 连接（握手完成才继续）。
-        self._ws_ping_task = asyncio.create_task(self._ws_client._ping_loop())  # 启动心跳定时器，定期发送心跳包保持连接活跃。
+        self._ws_ping_task = asyncio.create_task(
+            self._ws_client._ping_loop()
+        )  # 启动心跳定时器，定期发送心跳包保持连接活跃。
         try:
-            await stop_event.wait() # 主协程在这里“挂起等待停机信号”，连接持续工作。
+            await stop_event.wait()  # 主协程在这里“挂起等待停机信号”，连接持续工作。
         finally:  # 无论正常退出、异常、取消，都会执行清理：
-            if self._ws_ping_task is not None: # 取消心跳定时器。
+            if self._ws_ping_task is not None:  # 取消心跳定时器。
                 self._ws_ping_task.cancel()
-                with contextlib.suppress(asyncio.CancelledError): # 等待心跳定时器完成。
+                with contextlib.suppress(asyncio.CancelledError):  # 等待心跳定时器完成。
                     await self._ws_ping_task
                 self._ws_ping_task = None
-            if self._ws_client is not None: # 断开 WS 连接。
-                with contextlib.suppress(Exception): # 等待 WS 连接断开。
+            if self._ws_client is not None:  # 断开 WS 连接。
+                with contextlib.suppress(Exception):  # 等待 WS 连接断开。
                     await self._ws_client._disconnect()  # 断开 WS 连接。
-                self._ws_client = None # 清空客户端引用。
+                self._ws_client = None  # 清空客户端引用。
 
     async def send(self, message: ChannelMessage) -> None:
         text = self._extract_reply_text(message.content)
@@ -152,7 +156,7 @@ class FeishuChannel(Channel):
         elif isinstance(payload, dict) and message_type != "text":
             raw = payload.get("content", "")
             if raw:
-                raw = raw[0][0]['text']
+                raw = raw[0][0]["text"]
             return str(raw) if raw is not None else ""
         return content
 
@@ -212,7 +216,7 @@ class FeishuChannel(Channel):
         message = event.get("message")
         if not isinstance(message, dict):
             return
-        chat_id = str(message.get("chat_id", "")) # chat_id 是飞书事件消息体里带过来的
+        chat_id = str(message.get("chat_id", ""))  # chat_id 是飞书事件消息体里带过来的
         if not chat_id:
             return
         if self._allow_chats and chat_id not in self._allow_chats:
@@ -229,7 +233,7 @@ class FeishuChannel(Channel):
         content_raw = str(message.get("content", ""))
         text = ""
         media_items: list[MediaItem] = []
-        if message_type == "text": # 单文本消息
+        if message_type == "text":  # 单文本消息
             text = self._extract_inbound_text(message_type, content_raw).strip()
             if not text:
                 return
@@ -242,11 +246,11 @@ class FeishuChannel(Channel):
             text = self._extract_inbound_text(message_type, content_raw).strip()
 
         # 飞书消息message: {'message_id': '', 'create_time': '', 'update_time': '', 'chat_id': '', 'chat_type': '', 'message_type': '', 'content': '{"text":"hello"}'}
-        session_id = f"{self.name}:{chat_id}" # session_id = channel:chat_id， eg: Feishu 消息：feishu:123456789
+        session_id = f"{self.name}:{chat_id}"  # session_id = channel:chat_id， eg: Feishu 消息：feishu:123456789
         if text.startswith(","):
-            inbound_content = text # 逗号命令直接原样传给框架。
+            inbound_content = text  # 逗号命令直接原样传给框架。
         else:
-            inbound_content = json.dumps( # 普通文本消息，包装成 JSON 格式。
+            inbound_content = json.dumps(  # 普通文本消息，包装成 JSON 格式。
                 {
                     "message": text,
                     "message_id": str(message.get("message_id", "")),

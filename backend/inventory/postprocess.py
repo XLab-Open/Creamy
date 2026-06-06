@@ -13,6 +13,7 @@ from backend.utils.types import State
 
 _IDENTIFIER_RE = re.compile(r"^[A-Za-z_][A-Za-z0-9_]*$")
 
+
 class LLMPostprocess:
     def __init__(self):
         self._sql_set = SQLSettings()
@@ -20,11 +21,13 @@ class LLMPostprocess:
         self.embedding = Embedding()
         self._sql_set_error = False
 
-        if self._sql_set.user is None or \
-           self._sql_set.password is None or \
-           self._sql_set.host is None or \
-           self._sql_set.port is None or \
-           self._sql_set.dbname is None:
+        if (
+            self._sql_set.user is None
+            or self._sql_set.password is None
+            or self._sql_set.host is None
+            or self._sql_set.port is None
+            or self._sql_set.dbname is None
+        ):
             self._sql_set_error = True
 
     def get_engine(self) -> sqlalchemy.engine.Engine:
@@ -32,10 +35,10 @@ class LLMPostprocess:
             logger.error("SQL settings are not configured")
             return None
         return sqlalchemy.create_engine(
-                self.connection_string,
-                connect_args={"connect_timeout": self._sql_set.connect_timeout},
-                pool_timeout=self._sql_set.connect_timeout,
-            )
+            self.connection_string,
+            connect_args={"connect_timeout": self._sql_set.connect_timeout},
+            pool_timeout=self._sql_set.connect_timeout,
+        )
 
     def get_vector_db(self, table_name: str = "none", pre_delete_collection: bool = False) -> Pgvector | None:
         table_name = self._safe_identifier(table_name)
@@ -87,9 +90,10 @@ class LLMPostprocess:
         if not resolutions:
             final_rendered += "帮您查询了数据库，未找到相关物品\n"
         for res in resolutions:
-
             item_norm = res.get("input_item")
-            query = {key: item_norm[key] for key in item_norm if key != "confidence" and item_norm[key] not in [None, ""]}
+            query = {
+                key: item_norm[key] for key in item_norm if key != "confidence" and item_norm[key] not in [None, ""]
+            }
             if set(query) == {"name"}:
                 inventory_row = sql.query_inventory(query, engine)
                 if inventory_row:
@@ -99,7 +103,11 @@ class LLMPostprocess:
                     final_rendered += f"{res['name']} 未找到库存\n"
             else:
                 item_norm = res.get("top_candidate")
-                query = {key: item_norm[key] for key in res.get("top_candidate") if key in ['name', 'spec', 'brand', 'material'] and item_norm[key] not in [None, ""]}
+                query = {
+                    key: item_norm[key]
+                    for key in res.get("top_candidate")
+                    if key in ["name", "spec", "brand", "material"] and item_norm[key] not in [None, ""]
+                }
                 if res.get("resolved"):
                     inventory_row = sql.query_inventory(query, engine)
                     if inventory_row:

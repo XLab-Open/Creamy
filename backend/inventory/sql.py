@@ -8,8 +8,7 @@ class SQL:
     def __init__(self):
         pass
 
-    def query_inventory(self, filters: Mapping[str, Any] | None,
-                        engine: Engine | None = None) -> list[dict]:
+    def query_inventory(self, filters: Mapping[str, Any] | None, engine: Engine | None = None) -> list[dict]:
 
         query_fields = set(filters.keys()) if isinstance(filters, Mapping) else set()
         try:
@@ -23,7 +22,7 @@ class SQL:
                     table_columns = {col.name for col in table.c}
                     if not query_fields.issubset(table_columns):
                         continue
-                    conditions    = [table.c[key] == value for key, value in filters.items()]
+                    conditions = [table.c[key] == value for key, value in filters.items()]
                     group_by_cols = [table.c[key] for key in filters.keys()]
 
                     # 所有 filter 字段 + 总数
@@ -39,10 +38,7 @@ class SQL:
                         merged[key] = merged.get(key, 0) + row["total"]
 
             # 还原成 list[dict]
-            return [
-                {**dict(zip(query_fields, key)), "total": total}
-                for key, total in merged.items()
-            ]
+            return [{**dict(zip(query_fields, key)), "total": total} for key, total in merged.items()]
 
         except Exception:
             return []

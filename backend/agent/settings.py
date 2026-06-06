@@ -31,6 +31,7 @@ def provider_specific(setting_name: str) -> Callable[[], dict[str, str] | None]:
 
     return default_factory
 
+
 class SQLSettings(BaseSettings):
     model_config = SettingsConfigDict(env_prefix="CREAMY_SQL_", extra="ignore", env_file=".env")
     host: str = Field(default="", description="host.")
@@ -39,6 +40,7 @@ class SQLSettings(BaseSettings):
     password: str = Field(default="", description="password.")
     dbname: str = Field(default="", description="dbname.")
     connect_timeout: int = Field(default=10, description="TCP connect timeout in seconds.")
+
 
 class AgentSettings(BaseSettings):
     """Configuration settings for the Agent."""
@@ -74,6 +76,7 @@ class AgentSettings(BaseSettings):
             file_secret_settings,
         )
 
+
 class FeishuSettings(BaseSettings):
     model_config = SettingsConfigDict(env_prefix="CREAMY_FEISHU_", extra="ignore", env_file=".env")
 
@@ -82,6 +85,7 @@ class FeishuSettings(BaseSettings):
     base_url: str = Field(default="https://open.feishu.cn", description="Feishu OpenAPI base URL.")
     allow_users: str | None = Field(default=None, description="Comma-separated list of allowed Feishu sender open_ids.")
     allow_chats: str | None = Field(default=None, description="Comma-separated list of allowed Feishu chat_ids.")
+
 
 class TelegramSettings(BaseSettings):
     model_config = SettingsConfigDict(env_prefix="CREAMY_TELEGRAM_", extra="ignore", env_file=".env")
@@ -98,10 +102,12 @@ class TelegramSettings(BaseSettings):
         description="Optional proxy URL for connecting to Telegram API, e.g. 'http://user:pass@host:port' or 'socks5://host:port'.",
     )
 
+
 class EmbeddingSettings(BaseSettings):
     model_config = SettingsConfigDict(env_prefix="CREAMY_Embedding_", extra="ignore", env_file=".env")
     model_name: str = Field(default="", description="model name.")
     api_key: str = Field(default="", description="api key.")
+
 
 class ChannelSettings(BaseSettings):
     model_config = SettingsConfigDict(env_prefix="CREAMY_", extra="ignore", env_file=".env")
@@ -122,6 +128,7 @@ class ChannelSettings(BaseSettings):
         description="Time window in seconds to consider a channel active for processing messages.",
     )
     stream_output: bool = Field(default=False, description="Whether to stream model output to channels in real-time.")
+
 
 @lru_cache(maxsize=1)
 def load_settings() -> AgentSettings:

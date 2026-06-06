@@ -1,4 +1,3 @@
-
 import math
 import re
 from collections.abc import Callable, Mapping, Sequence
@@ -47,6 +46,7 @@ def _query_columns(query: str | Mapping[str, Any], fallback: Sequence[str]) -> l
             columns.append(column)
     return columns
 
+
 def _cosine_similarity(left: list[float], right: list[float]) -> float:
     if not left or not right or len(left) != len(right):
         return 0.0
@@ -62,8 +62,10 @@ def _cosine_similarity(left: list[float], right: list[float]) -> float:
         return 0.0
     return dot / denom
 
-def _ensure_inventory_prototype_embeddings(inventory_proto_embeddings: list[list[float]] | None,
-    intent_embedding_client: Embedding | None) -> list[list[float]] | None:
+
+def _ensure_inventory_prototype_embeddings(
+    inventory_proto_embeddings: list[list[float]] | None, intent_embedding_client: Embedding | None
+) -> list[list[float]] | None:
 
     if inventory_proto_embeddings is not None:
         return inventory_proto_embeddings
@@ -74,22 +76,24 @@ def _ensure_inventory_prototype_embeddings(inventory_proto_embeddings: list[list
             logger.debug("intent embedding client unavailable: {}", exc)
             return None
     try:
-        inventory_proto_embeddings = intent_embedding_client.embed_documents(
-            list(_INVENTORY_INTENT_PROTOTYPES)
-        )
+        inventory_proto_embeddings = intent_embedding_client.embed_documents(list(_INVENTORY_INTENT_PROTOTYPES))
     except Exception as exc:
         logger.warning("failed to embed inventory intent prototypes: {}", exc)
         inventory_proto_embeddings = None
         return None
     return inventory_proto_embeddings, intent_embedding_client
 
-def _inventory_embedding_signal(intent_embedding_client: Embedding | None, text: str,
-    inventory_proto_embeddings: list[list[float]] | None) -> tuple[float, bool]:
+
+def _inventory_embedding_signal(
+    intent_embedding_client: Embedding | None, text: str, inventory_proto_embeddings: list[list[float]] | None
+) -> tuple[float, bool]:
     """Return (similarity in [0, 1], whether embedding path was usable)."""
     stripped = text.strip()
     if not stripped:
         return (0.0, False)
-    protos, intent_embedding_client = _ensure_inventory_prototype_embeddings(inventory_proto_embeddings, intent_embedding_client)
+    protos, intent_embedding_client = _ensure_inventory_prototype_embeddings(
+        inventory_proto_embeddings, intent_embedding_client
+    )
     if not protos or intent_embedding_client is None:
         return (0.0, False)
     try:
@@ -114,13 +118,12 @@ class Pgvector:
     ) -> None:
         self.engine = engine
         self.embedding_fn = embedding_fn
-        self.embedding_column = _safe_identifier(embedding_column) # 数据库表里存放向量的字段名
+        self.embedding_column = _safe_identifier(embedding_column)  # 数据库表里存放向量的字段名
         self.return_columns = tuple(_safe_identifier(column) for column in return_columns)
 
-    def similarity_search_with_score(self,
-                                     query: str | Mapping[str, Any],
-                                     k: int = 5,
-                                     use_rule: bool = False) -> list[tuple[dict[str, Any], float]]:
+    def similarity_search_with_score(
+        self, query: str | Mapping[str, Any], k: int = 5, use_rule: bool = False
+    ) -> list[tuple[dict[str, Any], float]]:
         query_embedding = _vector_literal(self.embedding_fn(_query_text(query)))
         query_fields = set(query.keys()) if isinstance(query, Mapping) else set()
 
@@ -132,7 +135,7 @@ class Pgvector:
         matched_tables = []
         for table_name, table in metadata.tables.items():
             table_columns = {col.name for col in table.c}
-            has_query_fields  = query_fields.issubset(table_columns)
+            has_query_fields = query_fields.issubset(table_columns)
             has_embedding_col = self.embedding_column in table_columns
             if has_query_fields and has_embedding_col:
                 matched_tables.append(table_name)
@@ -144,17 +147,16 @@ class Pgvector:
         all_results: list[tuple[dict[str, Any], float]] = []
 
         for table_name in matched_tables:
-            table           = metadata.tables[table_name]
-            table_columns   = {col.name for col in table.c}
+            table = metadata.tables[table_name]
+            table_columns = {col.name for col in table.c}
 
             # 取当前表实际存在的 return_columns（防止字段不一致报错）
-            return_columns  = [c for c in _query_columns(query, self.return_columns)
-                            if c in table_columns]
+            return_columns = [c for c in _query_columns(query, self.return_columns) if c in table_columns]
             if not return_columns:
                 continue
 
-            select_columns  = ", ".join(return_columns)
-            distance_expr   = f"{self.embedding_column} <=> CAST(:query_embedding AS vector)"
+            select_columns = ", ".join(return_columns)
+            distance_expr = f"{self.embedding_column} <=> CAST(:query_embedding AS vector)"
 
             statement = text(
                 f"""
@@ -167,10 +169,7 @@ class Pgvector:
 
             try:
                 with self.engine.connect() as conn:
-                    rows = conn.execute(
-                        statement,
-                        {"query_embedding": query_embedding, "limit": k}
-                    ).mappings()
+                    rows = conn.execute(statement, {"query_embedding": query_embedding, "limit": k}).mappings()
 
                     for row in rows:
                         all_results.append((
@@ -186,8 +185,9 @@ class Pgvector:
         all_results.sort(key=lambda x: x[1])
 
         if use_rule:
-            return all_results[:k], all_results[:20] # 返回前20条数据用于规则匹配
+            return all_results[:k], all_results[:20]  # 返回前20条数据用于规则匹配
         return all_results[:k]
+
 
 class DataFilter:
     def __init__(self, sku_vector_db: VectorSkuStore):
@@ -230,19 +230,17 @@ class DataFilter:
         for meta, score in matches:
             # For cosine distance, smaller is better. Convert to similarity-like score.
             vector_score = max(0.0, min(1.0, 1.0 - float(score)))
-            cands.append(
-                {
-                    "source": "vector",
-                    "sku": {
-                        "sku_id": meta.get("sku_id", ""),
-                        "name": meta.get("name", ""),
-                        "spec": meta.get("spec", ""),
-                        "brand": meta.get("brand", ""),
-                        "material": meta.get("material", ""),
-                    },
-                    "vector_score": vector_score,
-                }
-            )
+            cands.append({
+                "source": "vector",
+                "sku": {
+                    "sku_id": meta.get("sku_id", ""),
+                    "name": meta.get("name", ""),
+                    "spec": meta.get("spec", ""),
+                    "brand": meta.get("brand", ""),
+                    "material": meta.get("material", ""),
+                },
+                "vector_score": vector_score,
+            })
         return cands, rule_matches
 
     def merge_candidates(self, rule_cands: list, vec_cands: list) -> list:
@@ -258,13 +256,13 @@ class DataFilter:
                 merged[sku_id]["source"] = "exact"
         return list(merged.values())
 
-    def score_candidate(self,item_norm: dict, candidate: dict) -> dict:
+    def score_candidate(self, item_norm: dict, candidate: dict) -> dict:
         sku = candidate["sku"]
         name_score = SequenceMatcher(None, item_norm["name"], self.normalize_name(sku["name"])).ratio()
         spec_score = SequenceMatcher(None, item_norm["spec"], self.normalize_spec(sku["spec"])).ratio()
-        brand_score  = 1.0 if not item_norm["brand"] else SequenceMatcher(None, item_norm["brand"], sku["brand"]).ratio()
+        brand_score = 1.0 if not item_norm["brand"] else SequenceMatcher(None, item_norm["brand"], sku["brand"]).ratio()
         vector_score = candidate.get("vector_score", 0.0)
-        final_score  = 0.45 * name_score + 0.35 * spec_score + 0.10 * brand_score + 0.10 * vector_score
+        final_score = 0.45 * name_score + 0.35 * spec_score + 0.10 * brand_score + 0.10 * vector_score
 
         return {
             "sku_id": sku["sku_id"],
@@ -281,7 +279,7 @@ class DataFilter:
         }
 
     def resolve_sku(self, item: dict) -> dict:
-        item_norm  = self.normalize_item(item)
+        item_norm = self.normalize_item(item)
         vec_cands, rule_matches = self.vector_candidates(item_norm, self.sku_vector_db, top_k=5)
         rule_cands = self.exact_and_fuzzy_candidates(item_norm, rule_matches)
         candidates = self.merge_candidates(rule_cands, vec_cands)
