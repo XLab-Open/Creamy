@@ -9,9 +9,9 @@ from types import SimpleNamespace
 import pytest
 
 from backend.app.framework import CreamyFramework
-from backend.architecture.channels.message import ChannelMessage, MediaItem
-from backend.architecture.channels.telegram import TelegramChannel, _extract_media_items
-from backend.architecture.hooks.hook_impl import BuiltinImpl
+from backend.channels.message import ChannelMessage, MediaItem
+from backend.channels.telegram import TelegramChannel, _extract_media_items
+from backend.hooks.hook_impl import BuiltinImpl
 
 # ---------------------------------------------------------------------------
 # MediaItem & ChannelMessage
@@ -335,7 +335,7 @@ async def test_build_prompt_command_ignores_media(tmp_path: Path) -> None:
 
 
 def test_extract_text_from_parts() -> None:
-    from backend.architecture.agent.agent import _extract_text_from_parts
+    from backend.agent.agent import _extract_text_from_parts
 
     parts = [
         {"type": "text", "text": "hello"},
@@ -346,13 +346,13 @@ def test_extract_text_from_parts() -> None:
 
 
 def test_extract_text_from_parts_empty() -> None:
-    from backend.architecture.agent.agent import _extract_text_from_parts
+    from backend.agent.agent import _extract_text_from_parts
 
     assert _extract_text_from_parts([]) == ""
 
 
 def test_extract_text_from_parts_no_text_parts() -> None:
-    from backend.architecture.agent.agent import _extract_text_from_parts
+    from backend.agent.agent import _extract_text_from_parts
 
     parts = [{"type": "image_url", "image_url": {"url": "data:image/jpeg;base64,X"}}]
     assert _extract_text_from_parts(parts) == ""

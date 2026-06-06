@@ -7,11 +7,11 @@ from unittest.mock import MagicMock, patch
 
 import pytest
 
-import backend.architecture.agent as agent_module
-import backend.architecture.agent.codex_oauth_flow as openai_codex
-from backend.architecture.agent.agent import Agent
-from backend.architecture.agent.settings import AgentSettings
-from backend.architecture.core.tape_types import TapeContext
+import backend.agent as agent_module
+import backend.agent.codex_oauth_flow as openai_codex
+from backend.agent.agent import Agent
+from backend.agent.settings import AgentSettings
+from backend.core.tape_types import TapeContext
 
 
 def test_build_llm_passes_codex_resolver_to_republic(monkeypatch) -> None:
@@ -144,7 +144,7 @@ def _capture_model(monkeypatch) -> list[str | None]:
         captured.append(model)
         return _fake_chat_model()
 
-    monkeypatch.setattr("backend.architecture.llm.graph.build_chat_model", factory)
+    monkeypatch.setattr("backend.llm.graph.build_chat_model", factory)
     return captured
 
 

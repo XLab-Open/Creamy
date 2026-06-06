@@ -8,13 +8,13 @@ from types import SimpleNamespace
 
 import pytest
 
-from backend.architecture.channels.cli import CliChannel
-from backend.architecture.channels.feishu import FeishuChannel
-from backend.architecture.channels.handler import BufferedMessageHandler
-from backend.architecture.channels.manager import ChannelManager
-from backend.architecture.channels.message import ChannelMessage
-from backend.architecture.channels.telegram import CreamyMessageFilter, TelegramChannel, TelegramMessageParser
-from backend.architecture.core.events import StreamEvent
+from backend.channels.cli import CliChannel
+from backend.channels.feishu import FeishuChannel
+from backend.channels.handler import BufferedMessageHandler
+from backend.channels.manager import ChannelManager
+from backend.channels.message import ChannelMessage
+from backend.channels.telegram import CreamyMessageFilter, TelegramChannel, TelegramMessageParser
+from backend.core.events import StreamEvent
 
 
 class FakeChannel:
@@ -196,7 +196,7 @@ async def test_channel_manager_listen_and_run_passes_stream_output_setting(
         active_time_window = 60.0
         stream_output = True
 
-    import backend.architecture.channels.manager as manager_module
+    import backend.channels.manager as manager_module
 
     monkeypatch.setattr(manager_module, "ChannelSettings", StubChannelSettings)
     manager = ChannelManager(framework)

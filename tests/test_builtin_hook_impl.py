@@ -6,10 +6,10 @@ from types import SimpleNamespace
 import pytest
 
 from backend.app.framework import CreamyFramework
-from backend.architecture.channels.message import ChannelMessage
-from backend.architecture.core.events import AsyncStreamEvents, StreamEvent
-from backend.architecture.memory.store import FileTapeStore
-from backend.architecture.hooks.hook_impl import AGENTS_FILE_NAME, DEFAULT_SYSTEM_PROMPT, BuiltinImpl
+from backend.channels.message import ChannelMessage
+from backend.core.events import AsyncStreamEvents, StreamEvent
+from backend.memory.store import FileTapeStore
+from backend.hooks.hook_impl import AGENTS_FILE_NAME, DEFAULT_SYSTEM_PROMPT, BuiltinImpl
 
 
 class RecordingLifespan:

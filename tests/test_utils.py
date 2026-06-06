@@ -3,7 +3,7 @@ from pathlib import Path
 
 import pytest
 
-from backend.architecture.utils.utils import exclude_none, wait_until_stopped, workspace_from_state
+from backend.utils.utils import exclude_none, wait_until_stopped, workspace_from_state
 
 
 def test_exclude_none_keeps_non_none_values() -> None:

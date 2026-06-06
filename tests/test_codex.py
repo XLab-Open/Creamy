@@ -9,14 +9,14 @@ from __future__ import annotations
 import base64
 import json
 
-from backend.architecture.agent.codex_oauth import (
+from backend.agent.codex_oauth import (
     build_codex_headers,
     extract_codex_account_id,
     is_codex_token,
     resolve_codex_api_base,
 )
-from backend.architecture.agent.settings import AgentSettings
-from backend.architecture.llm.client import build_chat_model
+from backend.agent.settings import AgentSettings
+from backend.llm.client import build_chat_model
 
 
 def _make_codex_jwt(account_id: str = "acct_123") -> str:

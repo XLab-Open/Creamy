@@ -5,11 +5,11 @@ import shlex
 import sys
 
 import pytest
-import backend.architecture.tool.toolimpl as builtin_tools
-from backend.architecture.core.tools import ToolContext
-from backend.architecture.llm.messages import build_lc_tools
-from backend.architecture.tool.shelltool.shell_manager import ShellManager
-from backend.architecture.tool.toolimpl import bash, bash_output, kill_bash
+import backend.tools.toolimpl as builtin_tools
+from backend.core.tools import ToolContext
+from backend.llm.messages import build_lc_tools
+from backend.tools.shelltool.shell_manager import ShellManager
+from backend.tools.toolimpl import bash, bash_output, kill_bash
 
 
 def _tool_context(tmp_path) -> ToolContext:

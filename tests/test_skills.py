@@ -1,6 +1,6 @@
 from pathlib import Path
 
-from backend.architecture.skills import (
+from backend.skills import (
     SKILL_FILE_NAME,
     SkillMetadata,
     _parse_frontmatter,
