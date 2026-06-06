@@ -7,7 +7,7 @@ from datetime import datetime
 from pathlib import Path
 from typing import TYPE_CHECKING, Literal, cast
 
-import requests  # type: ignore[import-untyped]
+import requests
 from pydantic import BaseModel, Field
 
 from backend.agent.settings import FeishuSettings
