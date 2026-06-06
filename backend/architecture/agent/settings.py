@@ -43,7 +43,7 @@ class SQLSettings(BaseSettings):
 class AgentSettings(BaseSettings):
     """Configuration settings for the Agent."""
 
-    model_config = SettingsConfigDict(env_prefix="CREAMY_", env_parse_none_str="null", extra="ignore", env_file=".env")
+    model_config = SettingsConfigDict(env_prefix="CREAMY_", env_parse_none_str="null", extra="ignore")
     home: pathlib.Path = Field(default=DEFAULT_HOME)
     model: str = DEFAULT_MODEL
     fallback_models: list[str] | None = None
