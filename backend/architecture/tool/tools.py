@@ -9,7 +9,7 @@ from loguru import logger
 from pydantic import BaseModel
 
 from backend.architecture.core.tools import Tool
-from backend.architecture.core.tools import tool as republic_tool
+from backend.architecture.core.tools import tool as core_tool
 
 # Central registry for tools. Tools defined with the @tool decorator are automatically added here.
 REGISTRY: dict[str, Tool] = {}
@@ -113,7 +113,7 @@ def tool(
 ) -> Tool | Callable[[Callable], Tool]:
     """Decorator to convert a function into a Tool instance."""
 
-    result = republic_tool(
+    result = core_tool(
         func=func,
         name=name,
         model=model,

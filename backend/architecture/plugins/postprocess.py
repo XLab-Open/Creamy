@@ -8,7 +8,7 @@ from sqlalchemy.exc import ArgumentError, SQLAlchemyError
 from backend.architecture.agent.settings import SQLSettings
 from backend.architecture.llm.embedding import Embedding
 from backend.architecture.pipelines.sql import SQL
-from backend.architecture.plugins.logicfuction import DataFilter, Pgvector
+from backend.architecture.plugins.logicfunction import DataFilter, Pgvector
 from backend.architecture.utils.types import State
 
 _IDENTIFIER_RE = re.compile(r"^[A-Za-z_][A-Za-z0-9_]*$")
