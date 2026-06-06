@@ -1,10 +1,10 @@
 from __future__ import annotations
 
 import pytest
-from republic import TapeEntry, TapeQuery
-from republic.tape import InMemoryTapeStore
 
-from backend.architecture.memory.store import ForkTapeStore
+from backend.core.store import InMemoryTapeStore
+from backend.core.tape_types import TapeEntry, TapeQuery
+from backend.memory.store import ForkTapeStore
 
 
 @pytest.mark.asyncio

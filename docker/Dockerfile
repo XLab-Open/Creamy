@@ -36,17 +36,17 @@ RUN npm install -g pnpm && npm install -g @openai/codex
 WORKDIR /app
 # Install Python dependencies first (cached layer)
 COPY pyproject.toml uv.lock README.md LICENSE ./
-COPY docker/entrypoint.sh ./entrypoint.sh
+COPY docker/dockerentry.sh ./dockerentry.sh
 # Copy the full source and install
 COPY backend ./backend
 RUN uv sync --no-dev --no-editable && uv pip install "any-llm-sdk[gemini,xai]" && \
-    chmod +x /app/entrypoint.sh
+    chmod +x /app/dockerentry.sh
 
 WORKDIR /workspace
 
-# Keep in sync with backend/architecture/agent/settings.py:DEFAULT_HOME (~/.creamy).
+# Keep in sync with backend/agent/settings.py:DEFAULT_HOME (~/.creamy).
 VOLUME /root/.creamy
 
 ENTRYPOINT ["/usr/bin/tini", "--"]
 
-CMD ["/app/entrypoint.sh"]
+CMD ["/app/dockerentry.sh"]

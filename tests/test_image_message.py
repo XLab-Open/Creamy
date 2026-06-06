@@ -8,10 +8,10 @@ from types import SimpleNamespace
 
 import pytest
 
-from backend.architecture.schemas.hook_impl import BuiltinImpl
-from backend.architecture.channels.message import ChannelMessage, MediaItem
-from backend.architecture.channels.telegram import TelegramChannel, _extract_media_items
 from backend.app.framework import CreamyFramework
+from backend.channels.message import ChannelMessage, MediaItem
+from backend.channels.telegram import TelegramChannel, _extract_media_items
+from backend.hooks.hook_impl import BuiltinImpl
 
 # ---------------------------------------------------------------------------
 # MediaItem & ChannelMessage
@@ -195,7 +195,7 @@ async def test_telegram_build_message_extracts_media_items(monkeypatch: pytest.M
         parse=_async_return(("[Photo message]", photo_metadata)),
         get_reply=_async_return(None),
     )
-    monkeypatch.setattr("bub.channels.telegram.MESSAGE_FILTER.filter", lambda message: True)
+    monkeypatch.setattr("backend.channels.telegram.MESSAGE_FILTER.filter", lambda message: True)
 
     message = SimpleNamespace(chat_id=42)
     result = await channel._build_message(message)  # type: ignore[arg-type]
@@ -212,7 +212,7 @@ async def test_telegram_build_message_no_media_for_text(monkeypatch: pytest.Monk
         parse=_async_return(("hello", {"type": "text", "sender_id": "7"})),
         get_reply=_async_return(None),
     )
-    monkeypatch.setattr("bub.channels.telegram.MESSAGE_FILTER.filter", lambda message: True)
+    monkeypatch.setattr("backend.channels.telegram.MESSAGE_FILTER.filter", lambda message: True)
 
     message = SimpleNamespace(chat_id=42)
     result = await channel._build_message(message)  # type: ignore[arg-type]
@@ -335,7 +335,7 @@ async def test_build_prompt_command_ignores_media(tmp_path: Path) -> None:
 
 
 def test_extract_text_from_parts() -> None:
-    from backend.architecture.agent.agent import _extract_text_from_parts
+    from backend.agent.agent import _extract_text_from_parts
 
     parts = [
         {"type": "text", "text": "hello"},
@@ -346,13 +346,13 @@ def test_extract_text_from_parts() -> None:
 
 
 def test_extract_text_from_parts_empty() -> None:
-    from backend.architecture.agent.agent import _extract_text_from_parts
+    from backend.agent.agent import _extract_text_from_parts
 
     assert _extract_text_from_parts([]) == ""
 
 
 def test_extract_text_from_parts_no_text_parts() -> None:
-    from backend.architecture.agent.agent import _extract_text_from_parts
+    from backend.agent.agent import _extract_text_from_parts
 
     parts = [{"type": "image_url", "image_url": {"url": "data:image/jpeg;base64,X"}}]
     assert _extract_text_from_parts(parts) == ""

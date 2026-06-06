@@ -4,23 +4,23 @@ from __future__ import annotations
 
 from dataclasses import dataclass
 from pathlib import Path
-from typing import TYPE_CHECKING, Any
+from typing import TYPE_CHECKING, Any, cast
 
 import pluggy
 import typer
 from dotenv import load_dotenv
 from loguru import logger
-from republic import AsyncTapeStore, RepublicError, TapeContext
-from republic.core.errors import ErrorKind
-from republic.tape import TapeStore
 
-from backend.architecture.utils.envelope import content_of, field_of, unpack_batch
-from backend.architecture.schemas.hook_runtime import HookRuntime
-from backend.architecture.schemas.hookspecs import CREAMY_HOOK_NAMESPACE, CreamyHookSpecs
-from backend.architecture.utils.types import Envelope, MessageHandler, OutboundChannelRouter, TurnResult
+from backend.core.errors import ErrorKind, RepublicError
+from backend.core.store import AsyncTapeStore, TapeStore
+from backend.core.tape_types import TapeContext
+from backend.hooks.hook_runtime import HookRuntime
+from backend.hooks.hookspecs import CREAMY_HOOK_NAMESPACE, CreamyHookSpecs
+from backend.utils.envelope import content_of, field_of, unpack_batch
+from backend.utils.types import Envelope, MessageHandler, OutboundChannelRouter, TurnResult
 
 if TYPE_CHECKING:
-    from backend.architecture.channels.base import Channel
+    from backend.channels.base import Channel
 
 
 load_dotenv()
@@ -44,7 +44,7 @@ class CreamyFramework:
         self._outbound_router: OutboundChannelRouter | None = None
 
     def _load_builtin_hooks(self) -> None:
-        from backend.architecture.schemas.hook_impl import BuiltinImpl
+        from backend.hooks.hook_impl import BuiltinImpl
 
         impl = BuiltinImpl(self)
 
@@ -159,7 +159,7 @@ class CreamyFramework:
         else:
             parts: list[str] = []
             if self._outbound_router is not None:
-                stream = self._outbound_router.wrap_stream(inbound, stream)
+                stream = self._outbound_router.wrap_stream(inbound, stream)  # type: ignore[assignment]
             async for event in stream:
                 if event.kind == "text":
                     parts.append(str(event.data.get("delta", "")))
@@ -241,7 +241,7 @@ class CreamyFramework:
         return channels
 
     def get_tape_store(self) -> TapeStore | AsyncTapeStore | None:
-        return self._hook_runtime.call_first_sync("provide_tape_store")
+        return cast("TapeStore | AsyncTapeStore | None", self._hook_runtime.call_first_sync("provide_tape_store"))
 
     def get_system_prompt(self, prompt: str | list[dict], state: dict[str, Any]) -> str:
         return "\n\n".join(
@@ -251,9 +251,9 @@ class CreamyFramework:
         )
 
     def build_tape_context(self) -> TapeContext:
-        return self._hook_runtime.call_first_sync("build_tape_context")
+        return cast("TapeContext", self._hook_runtime.call_first_sync("build_tape_context"))
 
-    async def _postprocess_model_output(self, inbound: Envelope, model_output: str, state: dict[str, Any]) -> None:
+    async def _postprocess_model_output(self, inbound: Envelope, model_output: str, state: dict[str, Any]) -> str:
         output = self._hook_runtime.call_first_sync("postprocess_model_output", model_output=model_output, state=state)
         if output is None:
             await self._hook_runtime.notify_error(
@@ -261,7 +261,7 @@ class CreamyFramework:
                 error=RuntimeError("no postprocess skill returned output"),
                 message=inbound,
             )
-        return output
+        return cast(str, output)
 
     async def _intent_detection(self, inbound: Envelope, model_output: str, state: dict[str, Any]) -> None:
         self._hook_runtime.call_first_sync("intent_detection", message=inbound, model_output=model_output, state=state)

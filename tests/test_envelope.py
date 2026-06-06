@@ -1,6 +1,6 @@
 from dataclasses import dataclass
 
-from backend.architecture.utils.envelope import content_of, field_of, normalize_envelope, unpack_batch
+from backend.utils.envelope import content_of, field_of, normalize_envelope, unpack_batch
 
 
 @dataclass

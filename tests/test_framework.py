@@ -5,13 +5,13 @@ from types import SimpleNamespace
 
 import pytest
 import typer
-from republic import AsyncStreamEvents, StreamEvent
 from typer.testing import CliRunner
 
-from backend.architecture.channels.base import Channel
-from backend.architecture.channels.message import ChannelMessage
 from backend.app.framework import CreamyFramework
-from backend.architecture.schemas.hookspecs import hookimpl
+from backend.channels.base import Channel
+from backend.channels.message import ChannelMessage
+from backend.core.events import AsyncStreamEvents, StreamEvent
+from backend.hooks.hookspecs import hookimpl
 
 
 class NamedChannel(Channel):
@@ -139,6 +139,10 @@ async def test_process_inbound_defaults_to_non_streaming_run_model() -> None:
             return "plain-text"
 
         @hookimpl
+        def postprocess_model_output(self, model_output, state) -> str:
+            return model_output
+
+        @hookimpl
         async def save_state(self, session_id, state, message, model_output) -> None:
             saved_outputs.append(model_output)
 
@@ -189,6 +193,10 @@ async def test_process_inbound_streams_when_requested() -> None:  # noqa: C901
                 yield StreamEvent("final", {"text": "streamed", "ok": True})
 
             return AsyncStreamEvents(iterator(), state=SimpleNamespace(error=None, usage=None))
+
+        @hookimpl
+        def postprocess_model_output(self, model_output, state) -> str:
+            return model_output
 
         @hookimpl
         async def save_state(self, session_id, state, message, model_output) -> None:

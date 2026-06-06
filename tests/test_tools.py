@@ -6,7 +6,7 @@ import pytest
 from loguru import logger
 from pydantic import BaseModel
 
-from backend.architecture.tool.tools import REGISTRY, model_tools, render_tools_prompt, resolve_tool_names, tool
+from backend.tools.tools import REGISTRY, model_tools, render_tools_prompt, resolve_tool_names, tool
 
 
 class EchoInput(BaseModel):

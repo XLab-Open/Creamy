@@ -3,7 +3,7 @@ from __future__ import annotations
 from pathlib import Path
 from unittest.mock import patch
 
-from backend.architecture.agent.settings import AgentSettings, load_settings
+from backend.agent.settings import AgentSettings, load_settings
 
 
 def _settings_with_env(env: dict[str, str]) -> AgentSettings:
