@@ -1,6 +1,6 @@
 import json
 
-import requests  # type: ignore[import-untyped]
+import requests
 
 from backend.agent.settings import FeishuSettings
 
