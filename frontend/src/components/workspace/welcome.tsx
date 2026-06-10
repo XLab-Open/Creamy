@@ -20,6 +20,7 @@ export function Welcome({
   const { t } = useI18n();
   const searchParams = useSearchParams();
   const isUltra = useMemo(() => mode === "ultra", [mode]);
+  const isSkillMode = searchParams.get("mode") === "skill";
   const colors = useMemo(() => {
     if (isUltra) {
       return ["#efefbb", "#e9c665", "#e3a812"];
@@ -29,6 +30,7 @@ export function Welcome({
   useEffect(() => {
     waved = true;
   }, []);
+
   return (
     <div
       className={cn(
@@ -37,18 +39,18 @@ export function Welcome({
       )}
     >
       <div className="text-2xl font-bold">
-        {searchParams.get("mode") === "skill" ? (
+        {isSkillMode ? (
           `✨ ${t.welcome.createYourOwnSkill} ✨`
         ) : (
           <div className="flex items-center gap-2">
             <div className={cn("inline-block", !waved ? "animate-wave" : "")}>
-              {isUltra ? "🚀" : "👋"}
+              {isUltra ? "🚀" : "🍦"}
             </div>
             <AuroraText colors={colors}>{t.welcome.greeting}</AuroraText>
           </div>
         )}
       </div>
-      {searchParams.get("mode") === "skill" ? (
+      {isSkillMode && (
         <div className="text-muted-foreground text-sm">
           {t.welcome.createYourOwnSkillDescription.includes("\n") ? (
             <pre className="font-sans whitespace-pre">
@@ -58,15 +60,16 @@ export function Welcome({
             <p>{t.welcome.createYourOwnSkillDescription}</p>
           )}
         </div>
-      ) : (
-        <div className="text-muted-foreground text-sm">
-          {t.welcome.description.includes("\n") ? (
-            <pre className="font-sans whitespace-pre">
-              {t.welcome.description}
-            </pre>
-          ) : (
-            <p>{t.welcome.description}</p>
-          )}
+      )}
+
+      {/* 副标题 + 左右线条(技能模式下不显示) */}
+      {!isSkillMode && (
+        <div className="mt-2 flex w-full max-w-xs items-center gap-3">
+          <div className="bg-border h-px flex-1" />
+          <span className="text-muted-foreground shrink-0 text-xs">
+            今天想做点什么?
+          </span>
+          <div className="bg-border h-px flex-1" />
         </div>
       )}
     </div>

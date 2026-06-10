@@ -907,14 +907,6 @@ function SuggestionList() {
       >
         <SparklesIcon className="size-4" /> {t.inputBox.surpriseMe}
       </ConfettiButton>
-      {t.inputBox.suggestions.map((suggestion) => (
-        <Suggestion
-          key={suggestion.suggestion}
-          icon={suggestion.icon}
-          suggestion={suggestion.suggestion}
-          onClick={() => handleSuggestionClick(suggestion.prompt)}
-        />
-      ))}
       <DropdownMenu>
         <DropdownMenuTrigger asChild>
           <Suggestion icon={PlusIcon} suggestion={t.common.create} />

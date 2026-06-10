@@ -1,12 +1,11 @@
 "use client";
 
-import { ChevronRightIcon } from "lucide-react";
+import { IceCreamConeIcon } from "lucide-react";
 import Link from "next/link";
 
 import { Button } from "@/components/ui/button";
-import { FlickeringGrid } from "@/components/ui/flickering-grid";
-import Galaxy from "@/components/ui/galaxy";
-import { WordRotate } from "@/components/ui/word-rotate";
+import { ParticlesNetwork } from "@/components/ui/particles-network";
+import { ShineBorder } from "@/components/ui/shine-border";
 import { env } from "@/env";
 import { cn } from "@/lib/utils";
 
@@ -19,44 +18,15 @@ export function Hero({ className }: { className?: string }) {
       )}
     >
       <div className="absolute inset-0 z-0 bg-black/40">
-        <Galaxy
-          mouseRepulsion={false}
-          starSpeed={0.2}
-          density={0.6}
-          glowIntensity={0.35}
-          twinkleIntensity={0.3}
-          speed={0.5}
-        />
+        <ParticlesNetwork />
       </div>
-      <FlickeringGrid
-        className="absolute inset-0 z-0 translate-y-8 mask-[url(/images/deer.svg)] mask-size-[100vw] mask-center mask-no-repeat md:mask-size-[72vh]"
-        squareSize={4}
-        gridGap={4}
-        color={"white"}
-        maxOpacity={0.3}
-        flickerChance={0.25}
-      />
       <div className="container-md relative z-10 mx-auto flex h-screen flex-col items-center justify-center">
-        <h1 className="flex items-center gap-2 text-4xl font-bold md:text-6xl">
-          <WordRotate
-            words={[
-              "Deep Research",
-              "Collect Data",
-              "Analyze Data",
-              "Generate Webpages",
-              "Vibe Coding",
-              "Generate Slides",
-              "Generate Images",
-              "Generate Podcasts",
-              "Generate Videos",
-              "Generate Songs",
-              "Organize Emails",
-              "Do Anything",
-              "Learn Anything",
-            ]}
-          />{" "}
-          <div>with DeerFlow</div>
+        <h1 className="flex items-center gap-2 text-4xl font-bold text-orange-500 md:text-6xl">
+          <div>Creamy</div>
         </h1>
+        <p className="mt-4 text-center text-xl font-semibold md:text-2xl">
+          Push beyond limits, reinvent efficiency
+        </p>
         {env.NEXT_PUBLIC_STATIC_WEBSITE_ONLY && (
           <a
             href="https://byteplus.com"
@@ -70,18 +40,29 @@ export function Hero({ className }: { className?: string }) {
           </a>
         )}
         <p className="text-muted-foreground mt-8 scale-105 text-center text-2xl text-shadow-sm">
-          An open-source SuperAgent harness that researches, codes, and creates.
-          With
+          More than responding — we anticipate.
           <br />
-          the help of sandboxes, memories, tools, skills and subagents, it
-          handles
-          <br />
-          different levels of tasks that could take minutes to hours.
+          By the power of algorithms, we reinvent what efficiency means to you.
         </p>
-        <Link href="/workspace">
-          <Button className="size-lg mt-8 scale-108" size="lg">
-            <span className="text-md">Get Started with 2.0</span>
-            <ChevronRightIcon className="size-4" />
+        <Link href="/workspace" className="group relative mt-10 inline-flex">
+          {/* 背后的橙色辉光,悬停增强 */}
+          <div
+            aria-hidden
+            className="absolute -inset-[3px] rounded-full bg-gradient-to-r from-zinc-400 via-white to-zinc-300 opacity-50 blur-lg transition duration-300 group-hover:opacity-90"
+          />
+          <Button
+            size="lg"
+            className="relative z-10 overflow-hidden rounded-full border border-white/15 bg-black/70 px-8 text-base font-semibold text-white backdrop-blur-md transition-transform duration-300 hover:scale-105 hover:bg-black/70"
+          >
+            {/* 流光描边 */}
+            <ShineBorder
+              borderWidth={1.5}
+              duration={8}
+              shineColor={["#d4d4d8", "#ffffff", "#a1a1aa"]}
+              className="rounded-full"
+            />
+            <span>Get Started</span>
+            <IceCreamConeIcon className="size-4 transition-transform duration-300 group-hover:translate-x-1" />
           </Button>
         </Link>
       </div>
