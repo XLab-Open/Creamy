@@ -73,6 +73,20 @@ def gateway(
     asyncio.run(manager.listen_and_run())
 
 
+def web(
+    ctx: typer.Context,
+) -> None:
+    """Start the Web gateway (HTTP/SSE) for the browser frontend."""
+    from backend.channels.manager import ChannelManager
+
+    framework = ctx.ensure_object(CreamyFramework)
+
+    # stream_output=True so the turn pipeline emits incremental events that the
+    # WebChannel forwards as SSE to the LangGraph-SDK frontend.
+    manager = ChannelManager(framework, enabled_channels=["web"], stream_output=True)
+    asyncio.run(manager.listen_and_run())
+
+
 def chat(
     ctx: typer.Context,
     chat_id: str = typer.Option("local", "--chat-id", help="Chat id"),
