@@ -219,6 +219,7 @@ class BuiltinImpl:
 
         app.command("run")(cli.run)
         app.command("cli")(cli.chat)
+        app.command("web")(cli.web)
         app.add_typer(cli.login_app)
         app.command("hooks", hidden=True)(cli.list_hooks)
         app.command("gateway")(cli.gateway)
@@ -246,11 +247,13 @@ class BuiltinImpl:
         from backend.channels.cli import CliChannel
         from backend.channels.feishu import FeishuChannel
         from backend.channels.telegram import TelegramChannel
+        from backend.channels.web import WebChannel
 
         return [
             TelegramChannel(on_receive=message_handler),
             FeishuChannel(on_receive=message_handler),
             CliChannel(on_receive=message_handler, agent=self.agent),
+            WebChannel(on_receive=message_handler),
         ]
 
     @hookimpl
