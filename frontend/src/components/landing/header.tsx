@@ -1,10 +1,8 @@
 import { StarFilledIcon, GitHubLogoIcon } from "@radix-ui/react-icons";
-import Link from "next/link";
 
 import { Button } from "@/components/ui/button";
 import { NumberTicker } from "@/components/ui/number-ticker";
 import type { Locale } from "@/core/i18n/locale";
-import { getI18n } from "@/core/i18n/server";
 import { env } from "@/env";
 import { cn } from "@/lib/utils";
 
@@ -14,10 +12,8 @@ export type HeaderProps = {
   locale?: Locale;
 };
 
-export async function Header({ className, homeURL, locale }: HeaderProps) {
+export function Header({ className, homeURL }: HeaderProps) {
   const isExternalHome = !homeURL;
-  const { locale: resolvedLocale, t } = await getI18n(locale);
-  const lang = resolvedLocale.substring(0, 2);
   return (
     <header
       className={cn(
@@ -31,24 +27,10 @@ export async function Header({ className, homeURL, locale }: HeaderProps) {
           target={isExternalHome ? "_blank" : "_self"}
           rel={isExternalHome ? "noopener noreferrer" : undefined}
         >
-          <h1 className="font-serif text-xl">DeerFlow</h1>
+          <h1 className="font-serif text-xl">Creamy</h1>
         </a>
       </div>
-      <nav className="mr-8 ml-auto flex items-center gap-8 text-sm font-medium">
-        <Link
-          href={`/${lang}/docs`}
-          className="text-secondary-foreground hover:text-foreground transition-colors"
-        >
-          {t.home.docs}
-        </Link>
-        <Link
-          href="/blog/posts"
-          className="text-secondary-foreground hover:text-foreground transition-colors"
-        >
-          {t.home.blog}
-        </Link>
-      </nav>
-      <div className="relative">
+      <div className="relative ml-auto">
         <div
           className="pointer-events-none absolute inset-0 z-0 h-full w-full rounded-full opacity-30 blur-2xl"
           style={{
