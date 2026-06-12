@@ -68,7 +68,7 @@
 @source inline("bg-{background,muted,primary,secondary,accent}");
 @source inline("border-{border,input}");
 
-@custom-variant dark (&:is(.dark *));
+@custom-variant dark (&:is(.dark *, .onedark *));
 
 @theme {
   --font-sans:
@@ -290,6 +290,69 @@
   --sidebar-border: oklch(1 0 0 / 10%);
   --sidebar-ring: oklch(0.556 0 0);
   font-weight: 300;
+}
+
+/* One Dark 主题:对齐 Ghostty 终端的 One Dark 配色(深蓝灰底 + 浅灰字 + 蓝色强调) */
+.onedark {
+  --background: #1e222a;
+  --foreground: #dcdfe4;
+  --card: #21262e;
+  --card-foreground: #dcdfe4;
+  --popover: #1b1f26;
+  --popover-foreground: #dcdfe4;
+  --primary: #61afef;
+  --primary-foreground: #1e222a;
+  --secondary: #2c313a;
+  --secondary-foreground: #dcdfe4;
+  --muted: #272b33;
+  --muted-foreground: #9aa1ad;
+  --accent: #2c313a;
+  --accent-foreground: #dcdfe4;
+  --destructive: #e06c75;
+  --border: #2c313a;
+  --input: #2c313a;
+  --ring: #61afef;
+  --chart-1: #61afef;
+  --chart-2: #98c379;
+  --chart-3: #e5c07b;
+  --chart-4: #c678dd;
+  --chart-5: #56b6c2;
+  --sidebar: #1a1e25;
+  --sidebar-foreground: #dcdfe4;
+  --sidebar-primary: #61afef;
+  --sidebar-primary-foreground: #1e222a;
+  --sidebar-accent: #2c313a;
+  --sidebar-accent-foreground: #dcdfe4;
+  --sidebar-border: #2c313a;
+  --sidebar-ring: #61afef;
+  font-weight: 300;
+}
+
+/* 磨砂(毛玻璃)效果:开启 .glass 后,侧栏与各弹层半透明 + 背景模糊。
+   --glass-opacity 由外观设置控制(0.5~1),内联在 <html> 上覆盖此默认值。 */
+.glass {
+  --glass-opacity: 0.75;
+}
+.glass [data-sidebar="sidebar"] {
+  background-color: color-mix(
+    in oklab,
+    var(--sidebar),
+    transparent calc((1 - var(--glass-opacity)) * 100%)
+  );
+  backdrop-filter: blur(16px) saturate(150%);
+  -webkit-backdrop-filter: blur(16px) saturate(150%);
+}
+.glass [data-slot="dialog-content"],
+.glass [data-slot="popover-content"],
+.glass [data-slot="dropdown-menu-content"],
+.glass [data-slot="dropdown-menu-sub-content"] {
+  background-color: color-mix(
+    in oklab,
+    var(--popover),
+    transparent calc((1 - var(--glass-opacity)) * 100%)
+  );
+  backdrop-filter: blur(16px) saturate(150%);
+  -webkit-backdrop-filter: blur(16px) saturate(150%);
 }
 
 @layer base {

@@ -36,6 +36,7 @@ export function CommandPalette() {
   const [shortcutsOpen, setShortcutsOpen] = useState(false);
   const [settingsOpen, setSettingsOpen] = useState(false);
   const [isMac, setIsMac] = useState(false);
+  const [mounted, setMounted] = useState(false);
 
   const handleNewChat = useCallback(() => {
     router.push("/workspace/chats/new");
@@ -66,9 +67,15 @@ export function CommandPalette() {
 
   useEffect(() => {
     setIsMac(navigator.userAgent.includes("Mac"));
+    setMounted(true);
   }, []);
   const metaKey = isMac ? "⌘" : "Ctrl+";
   const shiftKey = isMac ? "⇧" : "Shift+";
+
+  // 纯客户端浮层:挂载后再渲染,避免其 Radix Dialog 的 useId 在 SSR/客户端不一致。
+  if (!mounted) {
+    return null;
+  }
 
   return (
     <>

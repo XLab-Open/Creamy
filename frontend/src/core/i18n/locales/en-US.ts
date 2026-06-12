@@ -168,7 +168,8 @@ export const enUS: Translations = {
   // Sidebar
   sidebar: {
     newChat: "New chat",
-    chats: "Chats",
+    chats: "History",
+    dashboard: "Dashboard",
     recentChats: "Recent chats",
     demoChats: "Demo chats",
     agents: "Agents",
@@ -224,7 +225,7 @@ export const enUS: Translations = {
   // Breadcrumb
   breadcrumb: {
     workspace: "Workspace",
-    chats: "Chats",
+    chats: "Conversations",
   },
 
   // Workspace
@@ -246,7 +247,7 @@ export const enUS: Translations = {
 
   // Chats
   chats: {
-    searchChats: "Search chats",
+    searchChats: "Search conversations",
   },
 
   // Page titles (document title)
@@ -413,9 +414,11 @@ export const enUS: Translations = {
       system: "System",
       light: "Light",
       dark: "Dark",
+      onedark: "One Dark",
       systemDescription: "Match the operating system preference automatically.",
       lightDescription: "Bright palette with higher contrast for daytime.",
       darkDescription: "Dim palette that reduces glare for focus.",
+      onedarkDescription: "One Dark palette matching your Ghostty terminal.",
       languageTitle: "Language",
       languageDescription: "Switch between languages.",
     },
@@ -449,6 +452,66 @@ export const enUS: Translations = {
     acknowledge: {
       emptyTitle: "Acknowledgements",
       emptyDescription: "Credits and acknowledgements will show here.",
+    },
+  },
+  ext: {
+    auth: {
+      signInTitle: "Sign in to Creamy",
+      signUpTitle: "Sign up for Creamy",
+      tagline: "Push beyond limits, reinvent efficiency",
+      namePlaceholder: "Name",
+      emailPlaceholder: "Email",
+      passwordPlaceholder: "Password (min 8 chars)",
+      signIn: "Sign in",
+      signUp: "Sign up",
+      processing: "Processing…",
+      toLogin: "Already have an account? Sign in",
+      toSignUp: "No account? Sign up",
+      failed: "Something went wrong, please try again",
+    },
+    account: {
+      notSignedIn: "Not signed in",
+      clickToSignIn: "Click to sign in",
+      user: "User",
+      signOut: "Sign out",
+      signInOrUp: "Sign in / up",
+    },
+    connection: {
+      connected: "Connected",
+      connecting: "Connecting",
+      disconnected: "Disconnected",
+      backend: "Backend",
+      clickToReconnect: "Backend disconnected · click to reconnect",
+    },
+    appearance: {
+      glassTitle: "Frosted background",
+      glassDescription:
+        "Make the sidebar and overlays translucent with a frosted-glass blur.",
+      enableGlass: "Enable frosted effect",
+      surfaceOpacity: "Surface opacity",
+    },
+    chatsHistory: {
+      empty: "No conversations",
+      open: "Open",
+      emptyContent: "This conversation has no content",
+      pickOne: "Pick a conversation on the left to view its content",
+    },
+    dashboard: {
+      overview: "Workspace overview and token usage.",
+      totalThreads: "Conversations",
+      totalTokens: "Total tokens",
+      inputTokens: "Input tokens",
+      outputTokens: "Output tokens",
+      ioRatio: "Input / output ratio",
+      input: "Input",
+      output: "Output",
+      topThreads: "Token usage ranking",
+      noTokenData:
+        "No token data yet. The ranking will appear once you start chatting.",
+      quickActions: "Quick actions",
+    },
+    welcome: {
+      whatToDo: "What would you like to do today?",
     },
   },
 };

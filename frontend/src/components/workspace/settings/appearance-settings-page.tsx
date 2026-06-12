@@ -1,6 +1,11 @@
 "use client";
 
-import { MonitorSmartphoneIcon, MoonIcon, SunIcon } from "lucide-react";
+import {
+  MonitorSmartphoneIcon,
+  MoonIcon,
+  SunIcon,
+  TerminalIcon,
+} from "lucide-react";
 import { useTheme } from "next-themes";
 import { useMemo, type ComponentType, type SVGProps } from "react";
 
@@ -12,11 +17,15 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Separator } from "@/components/ui/separator";
+import { Switch } from "@/components/ui/switch";
 import { enUS, isLocale, zhCN, type Locale } from "@/core/i18n";
 import { useI18n } from "@/core/i18n/hooks";
+import { useLocalSettings } from "@/core/settings";
 import { cn } from "@/lib/utils";
 
 import { SettingsSection } from "./settings-section";
+
+type ThemeId = "system" | "light" | "dark" | "onedark";
 
 const languageOptions: { value: Locale; label: string }[] = [
   { value: "en-US", label: enUS.locale.localName },
@@ -26,27 +35,34 @@ const languageOptions: { value: Locale; label: string }[] = [
 export function AppearanceSettingsPage() {
   const { t, locale, changeLocale } = useI18n();
   const { theme, setTheme, systemTheme } = useTheme();
-  const currentTheme = (theme ?? "system") as "system" | "light" | "dark";
+  const [settings, setSettings] = useLocalSettings();
+  const currentTheme = (theme ?? "system") as ThemeId;
 
   const themeOptions = useMemo(
     () => [
       {
-        id: "system",
+        id: "system" as ThemeId,
         label: t.settings.appearance.system,
         description: t.settings.appearance.systemDescription,
         icon: MonitorSmartphoneIcon,
       },
       {
-        id: "light",
+        id: "light" as ThemeId,
         label: t.settings.appearance.light,
         description: t.settings.appearance.lightDescription,
         icon: SunIcon,
       },
       {
-        id: "dark",
+        id: "dark" as ThemeId,
         label: t.settings.appearance.dark,
         description: t.settings.appearance.darkDescription,
         icon: MoonIcon,
+      },
+      {
+        id: "onedark" as ThemeId,
+        label: t.settings.appearance.onedark,
+        description: t.settings.appearance.onedarkDescription,
+        icon: TerminalIcon,
       },
     ],
     [
@@ -54,6 +70,8 @@ export function AppearanceSettingsPage() {
       t.settings.appearance.darkDescription,
       t.settings.appearance.light,
       t.settings.appearance.lightDescription,
+      t.settings.appearance.onedark,
+      t.settings.appearance.onedarkDescription,
       t.settings.appearance.system,
       t.settings.appearance.systemDescription,
     ],
@@ -65,7 +83,7 @@ export function AppearanceSettingsPage() {
         title={t.settings.appearance.themeTitle}
         description={t.settings.appearance.themeDescription}
       >
-        <div className="grid gap-3 lg:grid-cols-3">
+        <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
           {themeOptions.map((option) => (
             <ThemePreviewCard
               key={option.id}
@@ -73,11 +91,56 @@ export function AppearanceSettingsPage() {
               label={option.label}
               description={option.description}
               active={currentTheme === option.id}
-              mode={option.id as "system" | "light" | "dark"}
+              mode={option.id}
               systemTheme={systemTheme}
               onSelect={(value) => setTheme(value)}
             />
           ))}
+        </div>
+      </SettingsSection>
+
+      <Separator />
+
+      <SettingsSection
+        title={t.ext.appearance.glassTitle}
+        description={t.ext.appearance.glassDescription}
+      >
+        <div className="space-y-4">
+          <div className="flex items-center justify-between gap-4">
+            <span className="text-sm font-medium">
+              {t.ext.appearance.enableGlass}
+            </span>
+            <Switch
+              checked={settings.appearance.glass}
+              onCheckedChange={(checked) =>
+                setSettings("appearance", { glass: checked })
+              }
+            />
+          </div>
+          {settings.appearance.glass && (
+            <div className="space-y-2">
+              <div className="flex items-center justify-between text-sm">
+                <span>{t.ext.appearance.surfaceOpacity}</span>
+                <span className="text-muted-foreground tabular-nums">
+                  {settings.appearance.glassOpacity}%
+                </span>
+              </div>
+              <input
+                type="range"
+                min={50}
+                max={100}
+                step={5}
+                value={settings.appearance.glassOpacity}
+                onChange={(e) =>
+                  setSettings("appearance", {
+                    glassOpacity: Number(e.target.value),
+                  })
+                }
+                className="accent-primary w-full"
+                aria-label={t.ext.appearance.surfaceOpacity}
+              />
+            </div>
+          )}
         </div>
       </SettingsSection>
 
@@ -124,12 +187,14 @@ function ThemePreviewCard({
   label: string;
   description: string;
   active: boolean;
-  mode: "system" | "light" | "dark";
+  mode: ThemeId;
   systemTheme?: string;
-  onSelect: (mode: "system" | "light" | "dark") => void;
+  onSelect: (mode: ThemeId) => void;
 }) {
   const previewMode =
     mode === "system" ? (systemTheme === "dark" ? "dark" : "light") : mode;
+  const isOneDark = previewMode === "onedark";
+  const isDarkLike = previewMode === "dark" || isOneDark;
   return (
     <button
       type="button"
@@ -155,16 +220,22 @@ function ThemePreviewCard({
       <div
         className={cn(
           "relative overflow-hidden rounded-md border text-xs transition-colors",
-          previewMode === "dark"
-            ? "border-neutral-800 bg-neutral-900 text-neutral-200"
-            : "border-slate-200 bg-white text-slate-900",
+          isOneDark
+            ? "border-[#2c313a] bg-[#1e222a] text-[#dcdfe4]"
+            : previewMode === "dark"
+              ? "border-neutral-800 bg-neutral-900 text-neutral-200"
+              : "border-slate-200 bg-white text-slate-900",
         )}
       >
         <div className="border-border/50 flex items-center gap-2 border-b px-3 py-2">
           <div
             className={cn(
               "h-2 w-2 rounded-full",
-              previewMode === "dark" ? "bg-emerald-400" : "bg-emerald-500",
+              isOneDark
+                ? "bg-[#61afef]"
+                : isDarkLike
+                  ? "bg-emerald-400"
+                  : "bg-emerald-500",
             )}
           />
           <div className="h-2 w-10 rounded-full bg-current/20" />

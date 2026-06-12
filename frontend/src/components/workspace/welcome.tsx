@@ -67,7 +67,7 @@ export function Welcome({
         <div className="mt-2 flex w-full max-w-xs items-center gap-3">
           <div className="bg-border h-px flex-1" />
           <span className="text-muted-foreground shrink-0 text-xs">
-            今天想做点什么?
+            {t.ext.welcome.whatToDo}
           </span>
           <div className="bg-border h-px flex-1" />
         </div>
