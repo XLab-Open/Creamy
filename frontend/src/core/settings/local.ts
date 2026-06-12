@@ -4,6 +4,10 @@ export const DEFAULT_LOCAL_SETTINGS: LocalSettings = {
   notification: {
     enabled: true,
   },
+  appearance: {
+    glass: false,
+    glassOpacity: 75,
+  },
   context: {
     model_name: undefined,
     mode: undefined,
@@ -21,6 +25,12 @@ function isBrowser(): boolean {
 export interface LocalSettings {
   notification: {
     enabled: boolean;
+  };
+  appearance: {
+    /** 磨砂(毛玻璃)效果开关 */
+    glass: boolean;
+    /** 表面不透明度 50-100(数值,百分比) */
+    glassOpacity: number;
   };
   context: Omit<
     AgentThreadContext,
@@ -47,6 +57,10 @@ function mergeLocalSettings(settings?: Partial<LocalSettings>): LocalSettings {
     notification: {
       ...DEFAULT_LOCAL_SETTINGS.notification,
       ...settings?.notification,
+    },
+    appearance: {
+      ...DEFAULT_LOCAL_SETTINGS.appearance,
+      ...settings?.appearance,
     },
   };
 }

@@ -23,7 +23,7 @@ export function Header({ className, homeURL }: HeaderProps) {
     >
       <div className="flex items-center gap-6">
         <a
-          href={homeURL ?? "https://github.com/bytedance/deer-flow"}
+          href={homeURL ?? "https://github.com/XLab-Open/Creamy"}
           target={isExternalHome ? "_blank" : "_self"}
           rel={isExternalHome ? "noopener noreferrer" : undefined}
         >
@@ -45,7 +45,7 @@ export function Header({ className, homeURL }: HeaderProps) {
           className="group relative z-10"
         >
           <a
-            href="https://github.com/bytedance/deer-flow"
+            href="https://github.com/XLab-Open/Creamy"
             target="_blank"
             rel="noopener noreferrer"
           >
@@ -66,7 +66,7 @@ async function StarCounter() {
 
   try {
     const response = await fetch(
-      "https://api.github.com/repos/bytedance/deer-flow",
+      "https://api.github.com/repos/XLab-Open/Creamy",
       {
         headers: env.GITHUB_OAUTH_TOKEN
           ? {

@@ -370,4 +370,63 @@ export interface Translations {
       emptyDescription: string;
     };
   };
+  /** 自定义扩展功能的文案(登录、看板、连接状态、磨砂、会话历史等) */
+  ext: {
+    auth: {
+      signInTitle: string;
+      signUpTitle: string;
+      tagline: string;
+      namePlaceholder: string;
+      emailPlaceholder: string;
+      passwordPlaceholder: string;
+      signIn: string;
+      signUp: string;
+      processing: string;
+      toLogin: string;
+      toSignUp: string;
+      failed: string;
+    };
+    account: {
+      notSignedIn: string;
+      clickToSignIn: string;
+      user: string;
+      signOut: string;
+      signInOrUp: string;
+    };
+    connection: {
+      connected: string;
+      connecting: string;
+      disconnected: string;
+      backend: string;
+      clickToReconnect: string;
+    };
+    appearance: {
+      glassTitle: string;
+      glassDescription: string;
+      enableGlass: string;
+      surfaceOpacity: string;
+    };
+    chatsHistory: {
+      empty: string;
+      open: string;
+      emptyContent: string;
+      pickOne: string;
+    };
+    dashboard: {
+      overview: string;
+      totalThreads: string;
+      totalTokens: string;
+      inputTokens: string;
+      outputTokens: string;
+      ioRatio: string;
+      input: string;
+      output: string;
+      topThreads: string;
+      noTokenData: string;
+      quickActions: string;
+    };
+    welcome: {
+      whatToDo: string;
+    };
+  };
 }

@@ -6,7 +6,6 @@ import {
   GraduationCapIcon,
   LightbulbIcon,
   PaperclipIcon,
-  PlusIcon,
   SparklesIcon,
   RocketIcon,
   XIcon,
@@ -53,7 +52,6 @@ import {
 import {
   DropdownMenuGroup,
   DropdownMenuLabel,
-  DropdownMenuSeparator,
 } from "@/components/ui/dropdown-menu";
 import { getBackendBaseURL } from "@/core/config";
 import { useI18n } from "@/core/i18n/hooks";
@@ -72,12 +70,6 @@ import {
   ModelSelectorTrigger,
 } from "../ai-elements/model-selector";
 import { Suggestion, Suggestions } from "../ai-elements/suggestion";
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuTrigger,
-} from "../ui/dropdown-menu";
 
 import { useThread } from "./messages/context";
 import { ModeHoverGuide } from "./mode-hover-guide";
@@ -464,6 +456,8 @@ export function InputBox({
       <PromptInput
         className={cn(
           "bg-background/85 rounded-2xl backdrop-blur-sm transition-all duration-300 ease-out *:data-[slot='input-group']:rounded-2xl",
+          // 聚焦高亮与"搜索会话"框一致:border-ring/50 + ring-ring/20 + ring-1
+          "*:data-[slot='input-group']:has-[[data-slot=input-group-control]:focus-visible]:border-ring/50 *:data-[slot='input-group']:has-[[data-slot=input-group-control]:focus-visible]:ring-ring/20 *:data-[slot='input-group']:has-[[data-slot=input-group-control]:focus-visible]:ring-1",
           className,
         )}
         disabled={disabled}
@@ -514,7 +508,7 @@ export function InputBox({
                     : "flash"
                 }
               >
-                <PromptInputActionMenuTrigger className="gap-1! px-2!">
+                <PromptInputActionMenuTrigger className="gap-1! px-2! focus-visible:border-transparent focus-visible:ring-0">
                   <div>
                     {context.mode === "flash" && <ZapIcon className="size-3" />}
                     {context.mode === "thinking" && (
@@ -907,30 +901,6 @@ function SuggestionList() {
       >
         <SparklesIcon className="size-4" /> {t.inputBox.surpriseMe}
       </ConfettiButton>
-      <DropdownMenu>
-        <DropdownMenuTrigger asChild>
-          <Suggestion icon={PlusIcon} suggestion={t.common.create} />
-        </DropdownMenuTrigger>
-        <DropdownMenuContent align="start">
-          <DropdownMenuGroup>
-            {t.inputBox.suggestionsCreate.map((suggestion, index) =>
-              "type" in suggestion && suggestion.type === "separator" ? (
-                <DropdownMenuSeparator key={index} />
-              ) : (
-                !("type" in suggestion) && (
-                  <DropdownMenuItem
-                    key={suggestion.suggestion}
-                    onClick={() => handleSuggestionClick(suggestion.prompt)}
-                  >
-                    {suggestion.icon && <suggestion.icon className="size-4" />}
-                    {suggestion.suggestion}
-                  </DropdownMenuItem>
-                )
-              ),
-            )}
-          </DropdownMenuGroup>
-        </DropdownMenuContent>
-      </DropdownMenu>
     </Suggestions>
   );
 }

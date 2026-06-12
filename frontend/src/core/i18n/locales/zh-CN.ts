@@ -83,7 +83,7 @@ export const zhCN: Translations = {
       "我们一起用 skill-creator 技能来创建一个技能吧。先问问我希望这个技能能做什么。",
     addAttachments: "添加附件",
     mode: "模式",
-    flashMode: "闪速",
+    flashMode: "flash",
     flashModeDescription: "快速且高效的完成任务，但可能不够精准",
     reasoningMode: "思考",
     reasoningModeDescription: "思考后再行动，在时间与准确性之间取得平衡",
@@ -162,7 +162,8 @@ export const zhCN: Translations = {
   // Sidebar
   sidebar: {
     newChat: "新对话",
-    chats: "对话",
+    chats: "会话历史",
+    dashboard: "看板",
     recentChats: "最近的对话",
     demoChats: "演示对话",
     agents: "智能体",
@@ -212,7 +213,7 @@ export const zhCN: Translations = {
   // Breadcrumb
   breadcrumb: {
     workspace: "工作区",
-    chats: "对话",
+    chats: "会话",
   },
 
   // Workspace
@@ -234,7 +235,7 @@ export const zhCN: Translations = {
 
   // Chats
   chats: {
-    searchChats: "搜索对话",
+    searchChats: "搜索会话",
   },
 
   // Page titles (document title)
@@ -395,9 +396,11 @@ export const zhCN: Translations = {
       system: "系统",
       light: "浅色",
       dark: "深色",
+      onedark: "One Dark",
       systemDescription: "自动跟随系统主题。",
       lightDescription: "更明亮的配色，适合日间使用。",
       darkDescription: "更暗的配色，减少眩光方便专注。",
+      onedarkDescription: "优雅的 one dark 深蓝灰色",
       languageTitle: "语言",
       languageDescription: "在不同语言之间切换。",
     },
@@ -430,6 +433,64 @@ export const zhCN: Translations = {
     acknowledge: {
       emptyTitle: "致谢",
       emptyDescription: "相关的致谢信息会展示在这里。",
+    },
+  },
+  ext: {
+    auth: {
+      signInTitle: "登录 Creamy",
+      signUpTitle: "注册 Creamy",
+      tagline: "Push beyond limits, reinvent efficiency",
+      namePlaceholder: "昵称",
+      emailPlaceholder: "邮箱",
+      passwordPlaceholder: "密码(≥8 位)",
+      signIn: "登录",
+      signUp: "注册",
+      processing: "处理中…",
+      toLogin: "已有账号?去登录",
+      toSignUp: "没有账号?去注册",
+      failed: "操作失败,请重试",
+    },
+    account: {
+      notSignedIn: "未登录",
+      clickToSignIn: "点击登录账户",
+      user: "用户",
+      signOut: "退出登录",
+      signInOrUp: "登录 / 注册",
+    },
+    connection: {
+      connected: "已连接",
+      connecting: "连接中",
+      disconnected: "未连接",
+      backend: "后端",
+      clickToReconnect: "后端未连接 · 点击重连",
+    },
+    appearance: {
+      glassTitle: "磨砂背景",
+      glassDescription: "开启后侧栏与各类弹层呈半透明毛玻璃质感(背景模糊)。",
+      enableGlass: "启用磨砂效果",
+      surfaceOpacity: "表面不透明度",
+    },
+    chatsHistory: {
+      empty: "暂无会话",
+      open: "打开",
+      emptyContent: "该会话暂无内容",
+      pickOne: "选择左侧的一个会话查看内容",
+    },
+    dashboard: {
+      overview: "工作区总览与 Token 使用情况。",
+      totalThreads: "会话总数",
+      totalTokens: "总 Token",
+      inputTokens: "输入 Token",
+      outputTokens: "输出 Token",
+      ioRatio: "输入 / 输出占比",
+      input: "输入",
+      output: "输出",
+      topThreads: "Token 用量排行",
+      noTokenData: "暂无会话 Token 数据,产生对话后这里会显示排行。",
+      quickActions: "快捷入口",
+    },
+    welcome: {
+      whatToDo: "今天想做点什么?",
     },
   },
 };

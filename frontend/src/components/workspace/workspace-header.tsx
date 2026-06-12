@@ -1,6 +1,6 @@
 "use client";
 
-import { MessageSquarePlus } from "lucide-react";
+import { IceCreamConeIcon, MessageSquarePlus } from "lucide-react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 
@@ -29,19 +29,24 @@ export function WorkspaceHeader({ className }: { className?: string }) {
       >
         {state === "collapsed" ? (
           <div className="group-has-data-[collapsible=icon]/sidebar-wrapper:-translate-y flex w-full cursor-pointer items-center justify-center">
-            <div className="text-primary block pt-1 font-serif group-hover/workspace-header:hidden">
-              DF
+            <div className="text-primary block pt-1 group-hover/workspace-header:hidden">
+              <IceCreamConeIcon className="size-4" />
             </div>
             <SidebarTrigger className="hidden pl-2 group-hover/workspace-header:block" />
           </div>
         ) : (
           <div className="flex items-center justify-between gap-2">
             {env.NEXT_PUBLIC_STATIC_WEBSITE_ONLY === "true" ? (
-              <Link href="/" className="text-primary ml-2 font-serif">
+              <Link
+                href="/"
+                className="text-primary ml-2 flex items-center gap-1.5 font-serif"
+              >
+                <IceCreamConeIcon className="size-4" />
                 Creamy
               </Link>
             ) : (
-              <div className="text-primary ml-2 cursor-default font-serif">
+              <div className="text-primary ml-2 flex cursor-default items-center gap-1.5 font-serif">
+                <IceCreamConeIcon className="size-4" />
                 Creamy
               </div>
             )}

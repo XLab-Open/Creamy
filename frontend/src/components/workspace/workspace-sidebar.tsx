@@ -9,6 +9,7 @@ import {
   useSidebar,
 } from "@/components/ui/sidebar";
 
+import { ConnectionStatus } from "./connection-status";
 import { RecentChatList } from "./recent-chat-list";
 import { WorkspaceHeader } from "./workspace-header";
 import { WorkspaceNavChatList } from "./workspace-nav-chat-list";
@@ -29,6 +30,9 @@ export function WorkspaceSidebar({
           {isSidebarOpen && <RecentChatList />}
         </SidebarContent>
         <SidebarFooter>
+          <div className="border-sidebar-border/60 border-t pt-1">
+            <ConnectionStatus />
+          </div>
           <WorkspaceNavMenu />
         </SidebarFooter>
         <SidebarRail />

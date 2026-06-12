@@ -54,6 +54,7 @@
     "ai": "^6.0.33",
     "best-effort-json-parser": "^1.2.1",
     "better-auth": "^1.3",
+    "better-sqlite3": "^12.10.0",
     "canvas-confetti": "^1.9.4",
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",
@@ -94,6 +95,7 @@
   "devDependencies": {
     "@eslint/eslintrc": "^3.3.1",
     "@tailwindcss/postcss": "^4.0.15",
+    "@types/better-sqlite3": "^7.6.13",
     "@types/gsap": "^3.0.0",
     "@types/node": "^20.14.10",
     "@types/react": "^19.0.0",
@@ -112,5 +114,8 @@
   "ct3aMetadata": {
     "initVersion": "7.40.0"
   },
-  "packageManager": "pnpm@10.26.2"
+  "packageManager": "pnpm@10.26.2",
+  "pnpm": {
+    "onlyBuiltDependencies": ["better-sqlite3"]
+  }
 }
