@@ -29,6 +29,7 @@ import os
 import time
 import uuid
 from collections.abc import AsyncIterable
+from pathlib import Path
 from typing import Any, ClassVar
 
 from aiohttp import web
@@ -74,7 +75,44 @@ class WebChannel(Channel):
         # run_id -> queue of ("delta", str) | (_END, None)
         self._streams: dict[str, asyncio.Queue] = {}
         # thread_id -> list of LangGraph-shaped messages ({type, content, id})
+        # 进程内的会话历史索引。它会被持久化到磁盘(见 _store_path),
+        # 这样后端重启后历史不会丢失。
         self._threads: dict[str, list[dict[str, Any]]] = {}
+        # 历史落盘路径:与 tapes 同级,放在 CREAMY_HOME 下。
+        home = Path(os.path.expanduser(os.getenv("CREAMY_HOME", "~/.creamy")))
+        self._store_path = home / "web_threads.json"
+        self._load_threads()
+
+    # ------------------------------------------------------------------ #
+    # Persistence: thread history survives backend restarts.
+    # ------------------------------------------------------------------ #
+    def _load_threads(self) -> None:
+        """启动时从磁盘恢复会话历史(文件不存在/损坏则视为空)。"""
+        try:
+            raw = self._store_path.read_text(encoding="utf-8")
+            data = json.loads(raw)
+            if isinstance(data, dict):
+                self._threads = {
+                    str(tid): msgs for tid, msgs in data.items() if isinstance(msgs, list)
+                }
+                logger.info(f"web.channel restored {len(self._threads)} thread(s) from {self._store_path}")
+        except FileNotFoundError:
+            pass
+        except Exception as exc:  # 损坏的历史文件不应阻止后端启动
+            logger.warning(f"web.channel failed to load thread history: {exc}")
+
+    def _save_threads(self) -> None:
+        """把会话历史原子写入磁盘(临时文件 + rename,避免半截写入)。"""
+        try:
+            self._store_path.parent.mkdir(parents=True, exist_ok=True)
+            tmp = self._store_path.with_suffix(".json.tmp")
+            tmp.write_text(
+                json.dumps(self._threads, ensure_ascii=False, default=str),
+                encoding="utf-8",
+            )
+            tmp.replace(self._store_path)
+        except Exception as exc:
+            logger.warning(f"web.channel failed to persist thread history: {exc}")
 
     # ------------------------------------------------------------------ #
     # Channel lifecycle
@@ -150,6 +188,7 @@ class WebChannel(Channel):
         body = await _json_body(request)
         thread_id = body.get("thread_id") or str(uuid.uuid4())
         self._threads.setdefault(thread_id, [])
+        self._save_threads()
         return web.json_response(self._thread_obj(thread_id))
 
     async def _get_thread(self, request: web.Request) -> web.Response:
@@ -248,6 +287,8 @@ class WebChannel(Channel):
         messages = self._threads.setdefault(thread_id, [])
         user_msg = {"type": "human", "content": user_text, "id": str(uuid.uuid4())}
         messages.append(user_msg)
+        # 提问一追加就落盘,即使本次 run 中途失败,问题也不会丢。
+        self._save_threads()
         ai_id = str(uuid.uuid4())
 
         # --- 3. 创建 per-run 队列并以 run_id 注册,这样(由 manager 循环调用的)
@@ -311,6 +352,8 @@ class WebChannel(Channel):
         # --- 8. 把完成的 AI 消息持久化进 thread 历史,再发出最终的 "values"
         #        帧和 "end" 帧来关闭这次 run。 ---
         messages.append({"type": "ai", "content": assistant_content, "id": ai_id})
+        # AI 回复完成,持久化整段对话,后端重启后历史可恢复。
+        self._save_threads()
         await response.write(_sse("values", {"messages": messages}, event_id=run_id))
         await response.write(_sse("end", None))
         await response.write_eof()

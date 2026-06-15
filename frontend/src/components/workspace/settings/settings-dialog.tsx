@@ -1,10 +1,10 @@
 "use client";
 
 import {
-  BellIcon,
   InfoIcon,
   BrainIcon,
   PaletteIcon,
+  SettingsIcon,
   SparklesIcon,
   WrenchIcon,
 } from "lucide-react";
@@ -62,7 +62,7 @@ export function SettingsDialog(props: SettingsDialogProps) {
       {
         id: "notification",
         label: t.settings.sections.notification,
-        icon: BellIcon,
+        icon: SettingsIcon,
       },
       {
         id: "memory",

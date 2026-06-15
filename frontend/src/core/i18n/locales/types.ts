@@ -428,5 +428,6 @@ export interface Translations {
     welcome: {
       whatToDo: string;
     };
+    thinking: string;
   };
 }

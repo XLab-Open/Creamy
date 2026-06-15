@@ -325,7 +325,7 @@ export const enUS: Translations = {
       memory: "Memory",
       tools: "Tools",
       skills: "Skills",
-      notification: "Notification",
+      notification: "General",
       about: "About",
     },
     memory: {
@@ -513,5 +513,6 @@ export const enUS: Translations = {
     welcome: {
       whatToDo: "What would you like to do today?",
     },
+    thinking: "Thinking…",
   },
 };

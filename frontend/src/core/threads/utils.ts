@@ -32,5 +32,16 @@ export function textOfMessage(message: Message) {
 }
 
 export function titleOfThread(thread: AgentThread) {
-  return thread.values?.title ?? "Untitled";
+  // 优先用后端给的标题;没有则用第一句话(第一条用户消息)。
+  if (thread.values?.title) {
+    return thread.values.title;
+  }
+  const firstHuman = thread.values?.messages?.find((m) => m.type === "human");
+  if (firstHuman) {
+    const text = textOfMessage(firstHuman)?.trim();
+    if (text) {
+      return text.length > 50 ? `${text.slice(0, 50)}…` : text;
+    }
+  }
+  return "Untitled";
 }

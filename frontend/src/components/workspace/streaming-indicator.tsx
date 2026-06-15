@@ -1,3 +1,9 @@
+"use client";
+
+import { SparklesIcon } from "lucide-react";
+
+import { Shimmer } from "@/components/ai-elements/shimmer";
+import { useI18n } from "@/core/i18n/hooks";
 import { cn } from "@/lib/utils";
 
 export function StreamingIndicator({
@@ -7,28 +13,23 @@ export function StreamingIndicator({
   className?: string;
   size?: "normal" | "sm";
 }) {
-  const dotSize = size === "sm" ? "w-1.5 h-1.5 mx-0.5" : "w-2 h-2 mx-1";
+  const { t } = useI18n();
 
   return (
-    <div className={cn("flex", className)}>
-      <div
+    <div className={cn("text-muted-foreground flex items-center gap-1.5", className)}>
+      <SparklesIcon
         className={cn(
-          dotSize,
-          "animate-bouncing bg-muted-foreground rounded-full opacity-100",
+          "animate-pulse",
+          size === "sm" ? "size-3.5" : "size-4",
         )}
       />
-      <div
-        className={cn(
-          dotSize,
-          "animate-bouncing bg-muted-foreground rounded-full opacity-100 [animation-delay:0.2s]",
-        )}
-      />
-      <div
-        className={cn(
-          dotSize,
-          "animate-bouncing bg-muted-foreground rounded-full opacity-100 [animation-delay:0.4s]",
-        )}
-      />
+      <Shimmer
+        duration={1.6}
+        spread={2}
+        className={cn("font-medium", size === "sm" ? "text-xs" : "text-sm")}
+      >
+        {t.ext.thinking}
+      </Shimmer>
     </div>
   );
 }

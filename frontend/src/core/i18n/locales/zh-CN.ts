@@ -310,7 +310,7 @@ export const zhCN: Translations = {
       memory: "记忆",
       tools: "工具",
       skills: "技能",
-      notification: "通知",
+      notification: "通用",
       about: "关于",
     },
     memory: {
@@ -492,5 +492,6 @@ export const zhCN: Translations = {
     welcome: {
       whatToDo: "今天想做点什么?",
     },
+    thinking: "正在思考…",
   },
 };
