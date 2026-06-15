@@ -13,6 +13,9 @@ function getInternalServiceURL(envKey, fallbackURL) {
 /** @type {import("next").NextConfig} */
 const config = {
   devIndicators: false,
+  // 关闭 gzip 压缩:否则代理的 SSE(text/event-stream)会被 gzip 缓冲,
+  // 导致流式输出在浏览器里变成"一次性"出现。前端直连后端、无 nginx,关掉最简单。
+  compress: false,
   async rewrites() {
     const rewrites = [];
     // Creamy serves both the LangGraph-compatible runtime and the gateway

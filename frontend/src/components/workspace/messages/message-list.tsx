@@ -47,6 +47,13 @@ export function MessageList({
   const rehypePlugins = useRehypeSplitWordsIntoSpans(thread.isLoading);
   const updateSubtask = useUpdateSubtask();
   const messages = thread.messages;
+  // 一旦 AI 开始吐字(有正文)或开始思考(有 reasoning),就不再显示"正在思考…"
+  const lastMessage = messages.at(-1);
+  const aiStarted =
+    lastMessage?.type === "ai" &&
+    ((extractContentFromMessage(lastMessage)?.trim().length ?? 0) > 0 ||
+      hasReasoning(lastMessage));
+  const showThinking = thread.isLoading && !aiStarted;
   if (thread.isThreadLoading && messages.length === 0) {
     return <MessageListSkeleton />;
   }
@@ -202,7 +209,7 @@ export function MessageList({
             />
           );
         })}
-        {thread.isLoading && <StreamingIndicator className="my-4" />}
+        {showThinking && <StreamingIndicator className="my-4" />}
         <div style={{ height: `${paddingBottom}px` }} />
       </ConversationContent>
     </Conversation>

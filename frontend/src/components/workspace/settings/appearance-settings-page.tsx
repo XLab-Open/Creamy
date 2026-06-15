@@ -9,16 +9,8 @@ import {
 import { useTheme } from "next-themes";
 import { useMemo, type ComponentType, type SVGProps } from "react";
 
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
 import { Separator } from "@/components/ui/separator";
 import { Switch } from "@/components/ui/switch";
-import { enUS, isLocale, zhCN, type Locale } from "@/core/i18n";
 import { useI18n } from "@/core/i18n/hooks";
 import { useLocalSettings } from "@/core/settings";
 import { cn } from "@/lib/utils";
@@ -26,11 +18,6 @@ import { cn } from "@/lib/utils";
 import { SettingsSection } from "./settings-section";
 
 type ThemeId = "system" | "light" | "dark" | "onedark";
-
-const languageOptions: { value: Locale; label: string }[] = [
-  { value: "en-US", label: enUS.locale.localName },
-  { value: "zh-CN", label: zhCN.locale.localName },
-];
 
 export function AppearanceSettingsPage() {
   const { t, locale, changeLocale } = useI18n();
@@ -142,33 +129,6 @@ export function AppearanceSettingsPage() {
             </div>
           )}
         </div>
-      </SettingsSection>
-
-      <Separator />
-
-      <SettingsSection
-        title={t.settings.appearance.languageTitle}
-        description={t.settings.appearance.languageDescription}
-      >
-        <Select
-          value={locale}
-          onValueChange={(value) => {
-            if (isLocale(value)) {
-              changeLocale(value);
-            }
-          }}
-        >
-          <SelectTrigger className="w-[220px]">
-            <SelectValue />
-          </SelectTrigger>
-          <SelectContent>
-            {languageOptions.map((item) => (
-              <SelectItem key={item.value} value={item.value}>
-                {item.label}
-              </SelectItem>
-            ))}
-          </SelectContent>
-        </Select>
       </SettingsSection>
     </div>
   );
