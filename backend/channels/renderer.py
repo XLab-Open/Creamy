@@ -87,7 +87,7 @@ class CliRenderer:
         tips = Text()
         tips.append("Tips for getting started\n\n", style="bold magenta")
         tips.append("• Type ", style="")
-        tips.append("',help'", style="green")
+        tips.append("'/help'", style="green")
         tips.append(" to list all commands\n")
         tips.append("• Prefix a line with ", style="")
         tips.append("','", style="green")
@@ -101,7 +101,7 @@ class CliRenderer:
         tips.append("Ctrl-T", style="green")
         tips.append(" mouse-scroll · drag to copy\n")
         tips.append("• Type ", style="")
-        tips.append("',quit'", style="green")
+        tips.append("'/quit'", style="green")
         tips.append(" (or Ctrl-D) to exit\n\n")
         tips.append("Just type your message and press Enter to chat.", style="bright_black")
 

@@ -249,7 +249,7 @@ class FeishuChannel(Channel):
 
         # 飞书消息message: {'message_id': '', 'create_time': '', 'update_time': '', 'chat_id': '', 'chat_type': '', 'message_type': '', 'content': '{"text":"hello"}'}
         session_id = f"{self.name}:{chat_id}"  # session_id = channel:chat_id， eg: Feishu 消息：feishu:123456789
-        if text.startswith(","):
+        if text.startswith("/"):
             inbound_content = text  # 逗号命令直接原样传给框架。
         else:
             inbound_content = json.dumps(  # 普通文本消息，包装成 JSON 格式。

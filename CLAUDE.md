@@ -10,7 +10,7 @@ Tooling is `uv` (Python) + `pnpm` (docs site). `make help` lists all targets.
 make install              # uv sync + pnpm website deps + prek (pre-commit) hooks
 uv sync                   # dependencies only
 
-uv run creamy chat        # interactive REPL
+uv run creamy cli         # interactive REPL
 uv run creamy run "msg"   # one-shot: single turn through the full pipeline, then exit
 uv run creamy gateway     # start configured channel listeners (Telegram, Feishu)
 
@@ -56,7 +56,7 @@ resolve_session → load_state → build_prompt → run_model → save_state →
 - **Distribution name is `creamy`; the importable package is `backend`** (not `creamy`). The console script is `creamy = "backend.__main__:app"`. Import from `backend.*`.
 - **The pluggy hook namespace and the entry-point group are both `"creamy"`** (`CREAMY_HOOK_NAMESPACE`). External plugins must register under entry-point group `creamy`.
 - **Runtime config is read from `CREAMY_*` env vars** (pydantic settings; see `env.example`) — e.g. `CREAMY_MODEL` (`provider:model`), `CREAMY_API_KEY`, `CREAMY_API_BASE`, `CREAMY_MAX_STEPS`, `CREAMY_HOME` (`~/.creamy`). Keep secrets in `.env`.
-- **CLI internal-command mode:** lines beginning with `,` are commands, not chat (`,help`, `,skill name=...`, `,fs.read path=README.md`).
+- **CLI internal-command mode:** lines beginning with `/` are commands, not chat (`/help`, `/skill name=...`, `/fs.read path=README.md`).
 - **Version is derived from git tags** via hatch-vcs; `backend/_version.py` is the generated-but-tracked version source — do not treat it as a build artifact to delete.
 - Commit style: Conventional Commits (`feat:`, `fix:`, `chore:`…); keep commits focused.
 

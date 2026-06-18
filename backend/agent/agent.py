@@ -94,7 +94,7 @@ class Agent:
         merge_back = not session_id.startswith("temp/")
         async with self.tapes.fork_tape(tape.name, merge_back=merge_back):
             await self.tapes.ensure_bootstrap_anchor(tape.name)
-            if isinstance(prompt, str) and prompt.strip().startswith(","):
+            if isinstance(prompt, str) and prompt.strip().startswith("/"):
                 return await self._run_command(tape=tape, line=prompt.strip())
             return await self._agent_loop(
                 tape=tape, prompt=prompt, model=model, allowed_skills=allowed_skills, allowed_tools=allowed_tools
@@ -125,7 +125,7 @@ class Agent:
         # So we use an AsyncExitStack and inject a callback to the iterator.
         await stack.enter_async_context(self.tapes.fork_tape(tape.name, merge_back=merge_back))
         await self.tapes.ensure_bootstrap_anchor(tape.name)
-        if isinstance(prompt, str) and prompt.strip().startswith(","):
+        if isinstance(prompt, str) and prompt.strip().startswith("/"):
             result = await self._run_command(tape=tape, line=prompt.strip())
             events = self._events_from_iterable([
                 StreamEvent("text", {"delta": result}),
