@@ -70,7 +70,7 @@ class WebChannel(Channel):
     def __init__(self, on_receive: MessageHandler, host: str | None = None, port: int | None = None) -> None:
         self._on_receive = on_receive
         self._host = host or os.getenv("CREAMY_WEB_HOST", "127.0.0.1")
-        self._port = int(port or os.getenv("CREAMY_WEB_PORT", "8000"))
+        self._port = port or int(os.getenv("CREAMY_WEB_PORT", "8000"))
         self._runner: web.AppRunner | None = None
         # run_id -> queue of ("delta", str) | (_END, None)
         self._streams: dict[str, asyncio.Queue] = {}
@@ -92,9 +92,7 @@ class WebChannel(Channel):
             raw = self._store_path.read_text(encoding="utf-8")
             data = json.loads(raw)
             if isinstance(data, dict):
-                self._threads = {
-                    str(tid): msgs for tid, msgs in data.items() if isinstance(msgs, list)
-                }
+                self._threads = {str(tid): msgs for tid, msgs in data.items() if isinstance(msgs, list)}
                 logger.info(f"web.channel restored {len(self._threads)} thread(s) from {self._store_path}")
         except FileNotFoundError:
             pass
@@ -123,25 +121,23 @@ class WebChannel(Channel):
 
     async def start(self, stop_event: asyncio.Event) -> None:
         app = web.Application()
-        app.add_routes(
-            [
-                web.get("/health", self._health),
-                # --- LangGraph Platform native API (served at root; the
-                #     frontend's /api/langgraph/* rewrite strips the prefix) ---
-                web.post("/threads", self._create_thread),
-                web.post("/threads/search", self._search_threads),
-                web.get("/threads/{thread_id}", self._get_thread),
-                web.get("/threads/{thread_id}/state", self._thread_state),
-                web.post("/threads/{thread_id}/history", self._thread_history),
-                web.post("/threads/{thread_id}/runs/stream", self._runs_stream),
-                web.post("/assistants/search", self._assistants_search),
-                web.get("/assistants/{assistant_id}", self._get_assistant),
-                # --- Gateway resource API (served under /api/*; the frontend's
-                #     /api/* rewrite forwards these keeping the prefix) ---
-                web.get("/api/models", self._list_models),
-                web.get("/api/skills", self._list_skills),
-            ]
-        )
+        app.add_routes([
+            web.get("/health", self._health),
+            # --- LangGraph Platform native API (served at root; the
+            #     frontend's /api/langgraph/* rewrite strips the prefix) ---
+            web.post("/threads", self._create_thread),
+            web.post("/threads/search", self._search_threads),
+            web.get("/threads/{thread_id}", self._get_thread),
+            web.get("/threads/{thread_id}/state", self._thread_state),
+            web.post("/threads/{thread_id}/history", self._thread_history),
+            web.post("/threads/{thread_id}/runs/stream", self._runs_stream),
+            web.post("/assistants/search", self._assistants_search),
+            web.get("/assistants/{assistant_id}", self._get_assistant),
+            # --- Gateway resource API (served under /api/*; the frontend's
+            #     /api/* rewrite forwards these keeping the prefix) ---
+            web.get("/api/models", self._list_models),
+            web.get("/api/skills", self._list_skills),
+        ])
         self._runner = web.AppRunner(app)
         await self._runner.setup()
         site = web.TCPSite(self._runner, self._host, self._port)
@@ -158,9 +154,7 @@ class WebChannel(Channel):
     # Stream routing: the turn's events come back here via the manager's
     # wrap_stream -> channel.stream_events(message, stream).
     # ------------------------------------------------------------------ #
-    def stream_events(
-        self, message: ChannelMessage, stream: AsyncIterable[StreamEvent]
-    ) -> AsyncIterable[StreamEvent]:
+    def stream_events(self, message: ChannelMessage, stream: AsyncIterable[StreamEvent]) -> AsyncIterable[StreamEvent]:
         run_id = message.context.get("run_id") if isinstance(message.context, dict) else None
         queue = self._streams.get(run_id) if run_id else None
 
@@ -214,19 +208,17 @@ class WebChannel(Channel):
         raw = os.getenv("CREAMY_MODEL", "deepseek:deepseek-chat").strip()
         _, _, model_id = raw.partition(":")
         model_id = model_id or raw
-        return web.json_response(
-            {
-                "models": [
-                    {
-                        "id": raw,
-                        "name": raw,
-                        "model": model_id,
-                        "display_name": raw,
-                        "supports_thinking": False,
-                    }
-                ]
-            }
-        )
+        return web.json_response({
+            "models": [
+                {
+                    "id": raw,
+                    "name": raw,
+                    "model": model_id,
+                    "display_name": raw,
+                    "supports_thinking": False,
+                }
+            ]
+        })
 
     async def _list_skills(self, request: web.Request) -> web.Response:
         """List Creamy's on-disk skills (``backend/skills/<name>/SKILL.md``)."""
@@ -249,15 +241,13 @@ class WebChannel(Channel):
                             break
                 except OSError:
                     pass
-                skills.append(
-                    {
-                        "name": name,
-                        "description": description,
-                        "license": None,
-                        "category": "public",
-                        "enabled": True,
-                    }
-                )
+                skills.append({
+                    "name": name,
+                    "description": description,
+                    "license": None,
+                    "category": "public",
+                    "enabled": True,
+                })
         except OSError:
             pass
         return web.json_response({"skills": skills})
@@ -423,9 +413,7 @@ def _extract_input_text(body: dict[str, Any]) -> str:
             if isinstance(last, dict):
                 content = last.get("content", "")
                 if isinstance(content, list):  # content blocks
-                    return "".join(
-                        b.get("text", "") for b in content if isinstance(b, dict)
-                    )
+                    return "".join(b.get("text", "") for b in content if isinstance(b, dict))
                 return str(content)
     if isinstance(inp, str):
         return inp

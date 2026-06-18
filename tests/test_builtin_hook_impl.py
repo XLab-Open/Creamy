@@ -195,23 +195,32 @@ def test_provide_channels_returns_cli_and_telegram(tmp_path: Path, monkeypatch: 
         def __init__(self, on_receive) -> None:
             self.on_receive = on_receive
 
+    class DummyWebChannel:
+        name = "web"
+
+        def __init__(self, on_receive) -> None:
+            self.on_receive = on_receive
+
     import backend.channels.cli
     import backend.channels.feishu
     import backend.channels.telegram
+    import backend.channels.web
 
     monkeypatch.setattr(backend.channels.cli, "CliChannel", DummyCliChannel)
     monkeypatch.setattr(backend.channels.telegram, "TelegramChannel", DummyTelegramChannel)
     monkeypatch.setattr(backend.channels.feishu, "FeishuChannel", DummyFeishuChannel)
+    monkeypatch.setattr(backend.channels.web, "WebChannel", DummyWebChannel)
 
     def message_handler(message) -> None:
         return None
 
     channels = impl.provide_channels(message_handler)
 
-    assert [channel.name for channel in channels] == ["telegram", "feishu", "cli"]
+    assert [channel.name for channel in channels] == ["telegram", "feishu", "cli", "web"]
     assert channels[0].on_receive is message_handler
     assert channels[2].on_receive is message_handler
     assert channels[2].agent is agent
+    assert channels[3].on_receive is message_handler
 
 
 @pytest.mark.asyncio
