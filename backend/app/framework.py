@@ -119,8 +119,6 @@ class CreamyFramework:
                         message=inbound,
                         model_output=model_output,
                     )
-                await self._intent_detection(inbound, model_output, state)
-                model_output = await self._postprocess_model_output(inbound, model_output, state)
 
                 outbounds = await self._collect_outbounds(inbound, session_id, state, model_output)
                 for outbound in outbounds:
